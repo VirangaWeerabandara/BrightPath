@@ -21,3 +21,5 @@ const studentSchema = new Schema({
         required: true,
     }
 });
+
+module.exports = mongoose.model('Student', studentSchema);
