@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button,Navbar, Footer, } from "flowbite-react";
 import logo from '../assets/logo.png'; 
 import picture from '../assets/picture.png';
+import courseIcon from '../assets/course.png';
+import instructorIcon from '../assets/instructor.png';
+import flexibleIcon from '../assets/flexible.png';
+import interactiveIcon from '../assets/interactive.png';
+import certificateIcon from '../assets/certificate.png';
+import techIcon from '../assets/tech.png';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
 
@@ -26,13 +32,32 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) =
 
 function LandingPage() {
 
+
+    const [formData, setFormData] = useState({
+          name: '',
+          email: '',
+          message: ''
+        });
+      
+        const handleChange = (e: { target: { name: any; value: any; }; }) => {
+          setFormData({ ...formData, [e.target.name]: e.target.value });
+        };
+      
+        const handleSubmit = (e: { preventDefault: () => void; }) => {
+          e.preventDefault();
+          // Handle form submission logic here
+          console.log('Form submitted:', formData);
+          // Reset form after submission
+          setFormData({ name: '', email: '', message: '' });
+        };
+
     const features = [
-        { icon: "/path/to/robust-workflow-icon.svg", title: "Robust workflow", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
-        { icon: "/path/to/flexibility-icon.svg", title: "Flexibility", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
-        { icon: "/path/to/user-friendly-icon.svg", title: "User friendly", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
-        { icon: "/path/to/multiple-layouts-icon.svg", title: "Multiple layouts", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
-        { icon: "/path/to/better-components-icon.svg", title: "Better components", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
-        { icon: "/path/to/well-organised-icon.svg", title: "Well organised", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+        { icon: courseIcon, title: "Wide Range of Courses", description: "We offer a diverse selection of courses across multiple disciplines, including technology, business, creative arts, and personal development. Whether you’re a beginner or an advanced learner, we have something for everyone." },
+        { icon: instructorIcon, title: "Expert Instructors", description: "Our courses are taught by industry experts and educators with real-world experience. They bring in-depth knowledge and practical insights to help you learn the skills you need to succeed." },
+        { icon: flexibleIcon, title: "Flexible Learning", description: "Learn at your own pace! With our on-demand video lessons, you can fit learning into your schedule, whether you're balancing a full-time job, school, or other commitments." },
+        { icon: interactiveIcon, title: "Interactive & Engaging", description: "We believe in active learning. Our platform provides interactive quizzes, assignments, and peer collaboration opportunities, ensuring that you stay engaged and apply your new skills effectively." },
+        { icon: certificateIcon, title: "Certificates of Completion", description: "Upon successfully completing a course, you’ll earn a certificate that you can share on your resume, LinkedIn profile, or with potential employers." },
+        { icon: techIcon, title: "Cutting-Edge Technology", description: "Stay ahead of the curve with our latest courses in emerging fields like artificial intelligence, data science, cybersecurity, and blockchain technology." },
       ];
   return (
     <>
@@ -42,21 +67,22 @@ function LandingPage() {
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">BrightPath</span>
       </Navbar.Brand>
       <div className="flex md:order-2">
-        <Button outline gradientDuoTone="purpleToBlue">Get started</Button>
+        <Button outline gradientDuoTone="purpleToBlue" className='w-24 text-lg font-bold'>Login</Button>
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Navbar.Link href="#" active>
+        <Navbar.Link href="#" active className='text-lg font-bold text-neutral-900'>
           Home
         </Navbar.Link>
-        <Navbar.Link href="#" >About</Navbar.Link>
-        <Navbar.Link href="#">Contact</Navbar.Link>
+        <Navbar.Link href="#" className='text-lg font-bold text-neutral-900'>About</Navbar.Link>
+        <Navbar.Link href="#" className='text-lg font-bold text-neutral-900'>Contact</Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
 
 {/* Hero Section */}
     <section className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20">
     {/* Text content */}
+  
     <div className="lg:w-1/2">
         <h1 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
         Empower your learning journey
@@ -66,10 +92,7 @@ function LandingPage() {
         </p>
         <div className="flex space-x-4">
         <button className="rounded-md bg-purple-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700">
-            Get Started
-        </button>
-        <button className="flex items-center text-purple-600 transition hover:text-purple-700">
-            Watch Video
+            SignUp
         </button>
         </div>
     </div>
@@ -88,16 +111,86 @@ function LandingPage() {
 
 {/* Features Section */}
 <div className="container mx-auto px-4 py-16">
-      <h2 className="mb-2 text-center text-4xl font-bold">Tailor-made features</h2>
-      <p className="mb-12 text-center text-xl text-gray-600">
-        Lorem ipsum is common placeholder text used to demonstrate the graphic elements of a document or visual presentation.
+    <section className="container mx-auto px-6 py-12">
+      <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
+        About Us
+      </h2>
+      <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
+        Welcome to <span className="font-semibold text-purple-600">BrightPath</span>, your ultimate destination for personalized learning! 
+        We are dedicated to providing high-quality, accessible education that empowers learners around the globe. 
+        Whether you are looking to pick up a new skill, advance your career, or explore your passions, our platform is designed to help you achieve your goals.
       </p>
+    </section>
+    <section className="container mx-auto px-6 py-4">
+      <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
+      Our Mission
+      </h2>
+      <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
+        At <span className="font-semibold text-purple-600">BrightPath</span>, our mission is simple: to make learning accessible, 
+        engaging, and impactful. We believe that education has the power to transform lives, 
+        and we strive to create a platform where everyone has the opportunity to learn and grow, regardless of their background or location.
+      </p>
+    </section>
+      <h2 className="mb-2 py-6 text-center text-4xl font-bold">What We Offer</h2>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature, index) => (
           <FeatureCard key={index} {...feature} />
         ))}
       </div>
     </div>
+
+    <section className="bg-white dark:bg-gray-900">
+      <div className="mx-auto max-w-screen-md px-4 py-8 lg:py-16">
+        <h2 className="mb-4 text-center text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Contact Us</h2>
+        <p className="mb-8 text-center font-light text-gray-500 sm:text-xl lg:mb-16 dark:text-gray-400">For any questions or feedback, our team at BrightPath is here to help you. Reach out to us through the form below, and we’ll respond promptly to ensure you have the best learning experience possible!</p>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div>
+            <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Your name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              placeholder="John Doe"
+              required
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Your email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              placeholder="name@example.com"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-400">Your message</label>
+            <textarea
+              id="message"
+              name="message"
+              rows={6}
+              className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              placeholder="Leave a comment..."
+              value={formData.message}
+              onChange={handleChange}
+            ></textarea>
+          </div>
+          <button 
+            type="submit" 
+            className="rounded-lg bg-blue-700 px-5 py-3 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-fit dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Send message
+          </button>
+        </form>
+      </div>
+    </section>
 
 <Footer container className="bg-primary-100">
       <div className="w-full" >
