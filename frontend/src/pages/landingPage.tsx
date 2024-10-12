@@ -1,19 +1,39 @@
 import React from 'react'
-import { Flowbite,Button,Navbar, Footer, theme } from "flowbite-react";
-import logo from './assets/logo.png'; 
-import type { CustomFlowbiteTheme } from "flowbite-react";
-import picture from './assets/picture.png';
+import { Button,Navbar, Footer, } from "flowbite-react";
+import logo from '../assets/logo.png'; 
+import picture from '../assets/picture.png';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
-const customTheme: CustomFlowbiteTheme = {
-    button: {
-      color: {
-        primary: "bg-grey-300",
-      },
-    },
-  };
+
+interface FeatureCardProps {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => (
+    <div className="rounded-lg bg-white p-6 shadow">
+      <div className="mb-4 flex items-center justify-center">
+        <img src={icon} alt={title} className="size-12" />
+      </div>
+      <h3 className="mb-2 text-xl font-bold">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </div>
+  );
+  
+    
+
 
 function LandingPage() {
+
+    const features = [
+        { icon: "/path/to/robust-workflow-icon.svg", title: "Robust workflow", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+        { icon: "/path/to/flexibility-icon.svg", title: "Flexibility", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+        { icon: "/path/to/user-friendly-icon.svg", title: "User friendly", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+        { icon: "/path/to/multiple-layouts-icon.svg", title: "Multiple layouts", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+        { icon: "/path/to/better-components-icon.svg", title: "Better components", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+        { icon: "/path/to/well-organised-icon.svg", title: "Well organised", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed erat nibh tristique ipsum." },
+      ];
   return (
     <>
     <Navbar fluid rounded>
@@ -35,36 +55,49 @@ function LandingPage() {
     </Navbar>
 
 {/* Hero Section */}
-<section className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20">
-  {/* Text content */}
-  <div className="lg:w-1/2">
-    <h1 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
-    Empower your learning journey
-    </h1>
-    <p className="mb-6 text-lg text-gray-600 lg:text-xl">
-    From foundational skills to advanced expertise, streamline your studies with personalized courses designed to help you achieve your goals and succeed at your own pace.
-    </p>
-    <div className="flex space-x-4">
-      <button className="px-6 py-3 font-semibold text-white transition bg-purple-600 rounded-md hover:bg-purple-700">
-        Get Started
-      </button>
-      <button className="flex items-center transition text-purple-600 hover:text-purple-700">
-        Watch Video
-      </button>
+    <section className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20">
+    {/* Text content */}
+    <div className="lg:w-1/2">
+        <h1 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
+        Empower your learning journey
+        </h1>
+        <p className="mb-6 text-lg text-gray-600 lg:text-xl">
+        From foundational skills to advanced expertise, streamline your studies with personalized courses designed to help you achieve your goals and succeed at your own pace.
+        </p>
+        <div className="flex space-x-4">
+        <button className="rounded-md bg-purple-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700">
+            Get Started
+        </button>
+        <button className="flex items-center text-purple-600 transition hover:text-purple-700">
+            Watch Video
+        </button>
+        </div>
     </div>
-  </div>
 
-  {/* Image */}
-  <div className="relative hidden mt-8 lg:block lg:w-1/2 lg:mt-0">
-    <div className="mx-auto w-full max-w-lg">
-      <img
-        src={picture}
-        alt="Woman with laptop"
-        className="object-cover w-full h-auto border-8 border-purple-300 rounded-full"
-      />
+    {/* Image */}
+    <div className="relative mt-8 hidden lg:mt-0 lg:block lg:w-1/2">
+        <div className="mx-auto w-full max-w-lg">
+        <img
+            src={picture}
+            alt="Woman with laptop"
+            className="h-auto w-full"
+        />
+        </div>
     </div>
-  </div>
-</section>
+    </section>
+
+{/* Features Section */}
+<div className="container mx-auto px-4 py-16">
+      <h2 className="mb-2 text-center text-4xl font-bold">Tailor-made features</h2>
+      <p className="mb-12 text-center text-xl text-gray-600">
+        Lorem ipsum is common placeholder text used to demonstrate the graphic elements of a document or visual presentation.
+      </p>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {features.map((feature, index) => (
+          <FeatureCard key={index} {...feature} />
+        ))}
+      </div>
+    </div>
 
 <Footer container className="bg-primary-100">
       <div className="w-full" >
