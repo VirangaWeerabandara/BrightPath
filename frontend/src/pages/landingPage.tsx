@@ -8,6 +8,7 @@ import flexibleIcon from '../assets/flexible.png';
 import interactiveIcon from '../assets/interactive.png';
 import certificateIcon from '../assets/certificate.png';
 import techIcon from '../assets/tech.png';
+import background from '../assets/background.png';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
 
@@ -61,7 +62,8 @@ function LandingPage() {
       ];
   return (
     <>
-    <Navbar fluid rounded>
+    <div className='h-screen bg-cover' style={{backgroundImage: `url(${background})`}}>
+    <Navbar fluid rounded className='bg-transparent'>
       <Navbar.Brand href="https://flowbite-react.com">
         <img src={logo} className="mr-3 h-6 sm:h-9" alt="BrightPath Logo" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">BrightPath</span>
@@ -81,8 +83,6 @@ function LandingPage() {
 
 {/* Hero Section */}
     <section className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20">
-    {/* Text content */}
-  
     <div className="lg:w-1/2">
         <h1 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
         Empower your learning journey
@@ -98,12 +98,12 @@ function LandingPage() {
     </div>
 
     {/* Image */}
-    <div className="relative mt-8 hidden lg:mt-0 lg:block lg:w-1/2">
+    <div className="relative mt-8 hidden lg:mt-0 lg:block lg:w-2/3">
         <div className="mx-auto w-full max-w-lg">
         <img
             src={picture}
             alt="Woman with laptop"
-            className="h-auto w-full"
+            className="w-[300px] h-auto sm:w-[400px] md:w-[500px] lg:w-[600px] translate-x-20 translate-y-10"
         />
         </div>
     </div>
@@ -240,6 +240,7 @@ function LandingPage() {
         </div>
       </div>
     </Footer>
+    </div>
     </>
   )
 }
