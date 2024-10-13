@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Button,Navbar, Footer, } from "flowbite-react";
 import logo from '../assets/logo.png'; 
 import picture from '../assets/picture.png';
@@ -9,6 +9,7 @@ import interactiveIcon from '../assets/interactive.png';
 import certificateIcon from '../assets/certificate.png';
 import techIcon from '../assets/tech.png';
 import background from '../assets/background.png';
+import { SignInForm } from '../components/signInForm';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
 
@@ -32,7 +33,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) =
 
 
 function LandingPage() {
-
+    const [openModal, setOpenModal] = useState(false);
+    const emailInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
           name: '',
@@ -62,27 +64,32 @@ function LandingPage() {
       ];
   return (
     <>
-    <div className='h-screen bg-cover' style={{backgroundImage: `url(${background})`}}>
-    <Navbar fluid rounded className='bg-transparent'>
+    <div className=' h-screen bg-cover' style={{backgroundImage: `url(${background})`}}>
+    <Navbar fluid rounded className='fixed top-0 left-0 w-full z-50 bg-white bg-opacity-20 backdrop-blur-lg'>
       <Navbar.Brand href="https://flowbite-react.com">
         <img src={logo} className="mr-3 h-6 sm:h-9" alt="BrightPath Logo" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">BrightPath</span>
       </Navbar.Brand>
       <div className="flex md:order-2">
-        <Button outline gradientDuoTone="purpleToBlue" className='w-24 text-lg font-bold'>Login</Button>
+        <Button onClick={() => setOpenModal(true)} outline gradientDuoTone="purpleToBlue" className='w-24 text-lg font-bold'>Login</Button>
+        <SignInForm 
+        openModal={openModal} 
+        setOpenModal={setOpenModal} 
+        emailInputRef={emailInputRef} 
+      />
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Navbar.Link href="#" active className='text-lg font-bold text-neutral-900'>
+        <Navbar.Link href="#home" active className='text-lg font-bold text-neutral-900'>
           Home
         </Navbar.Link>
-        <Navbar.Link href="#" className='text-lg font-bold text-neutral-900'>About</Navbar.Link>
-        <Navbar.Link href="#" className='text-lg font-bold text-neutral-900'>Contact</Navbar.Link>
+        <Navbar.Link href="#about"  className='text-lg font-bold text-neutral-900'>About</Navbar.Link>
+        <Navbar.Link href="#contact" className='text-lg font-bold text-neutral-900'>Contact</Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
 
 {/* Hero Section */}
-    <section className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20">
+    <section id='home' className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20">
     <div className="lg:w-1/2">
         <h1 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
         Empower your learning journey
@@ -110,7 +117,7 @@ function LandingPage() {
     </section>
 
 {/* Features Section */}
-<div className="container mx-auto px-4 py-16">
+<div id='about' className="container mt-10 mx-auto px-4 py-16">
     <section className="container mx-auto px-6 py-12">
       <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
         About Us
@@ -139,7 +146,7 @@ function LandingPage() {
       </div>
     </div>
 
-    <section className="bg-white dark:bg-gray-900">
+    <section id='contact' className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-screen-md px-4 py-8 lg:py-16">
         <h2 className="mb-4 text-center text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Contact Us</h2>
         <p className="mb-8 text-center font-light text-gray-500 sm:text-xl lg:mb-16 dark:text-gray-400">For any questions or feedback, our team at BrightPath is here to help you. Reach out to us through the form below, and we’ll respond promptly to ensure you have the best learning experience possible!</p>
