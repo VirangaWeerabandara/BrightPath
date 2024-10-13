@@ -10,6 +10,7 @@ import certificateIcon from '../assets/certificate.png';
 import techIcon from '../assets/tech.png';
 import background from '../assets/background.png';
 import { SignInForm } from '../components/signInForm';
+import { useNavigate } from 'react-router-dom';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
 
@@ -33,6 +34,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) =
 
 
 function LandingPage() {
+    const navigate = useNavigate()
     const [openModal, setOpenModal] = useState(false);
     const emailInputRef = useRef<HTMLInputElement>(null);
 
@@ -65,7 +67,7 @@ function LandingPage() {
   return (
     <>
     <div className=' h-screen bg-cover' style={{backgroundImage: `url(${background})`}}>
-    <Navbar fluid rounded className='fixed top-0 left-0 w-full z-50 bg-white bg-opacity-20 backdrop-blur-lg'>
+    <Navbar fluid rounded className='fixed left-0 top-0 z-50 w-full bg-white bg-opacity-20 backdrop-blur-lg'>
       <Navbar.Brand href="https://flowbite-react.com">
         <img src={logo} className="mr-3 h-6 sm:h-9" alt="BrightPath Logo" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">BrightPath</span>
@@ -98,7 +100,7 @@ function LandingPage() {
         From foundational skills to advanced expertise, streamline your studies with personalized courses designed to help you achieve your goals and succeed at your own pace.
         </p>
         <div className="flex space-x-4">
-        <button className="rounded-md bg-purple-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700">
+        <button onClick={() => navigate('/signup')} className="rounded-md bg-primary-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700">
             SignUp
         </button>
         </div>
@@ -110,20 +112,20 @@ function LandingPage() {
         <img
             src={picture}
             alt="Woman with laptop"
-            className="w-[300px] h-auto sm:w-[400px] md:w-[500px] lg:w-[600px] translate-x-20 translate-y-10"
+            className="h-auto w-[300px] translate-x-20 translate-y-10 sm:w-[400px] md:w-[500px] lg:w-[600px]"
         />
         </div>
     </div>
     </section>
 
 {/* Features Section */}
-<div id='about' className="container mt-10 mx-auto px-4 py-16">
+<div id='about' className="container mx-auto mt-10 px-4 py-16">
     <section className="container mx-auto px-6 py-12">
       <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
         About Us
       </h2>
       <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
-        Welcome to <span className="font-semibold text-purple-600">BrightPath</span>, your ultimate destination for personalized learning! 
+        Welcome to <span className="text-primary-600 font-semibold">BrightPath</span>, your ultimate destination for personalized learning! 
         We are dedicated to providing high-quality, accessible education that empowers learners around the globe. 
         Whether you are looking to pick up a new skill, advance your career, or explore your passions, our platform is designed to help you achieve your goals.
       </p>
@@ -157,7 +159,7 @@ function LandingPage() {
               type="text"
               id="name"
               name="name"
-              className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              className="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-600 dark:focus:border-primary-600 dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
               placeholder="John Doe"
               required
               value={formData.name}
@@ -170,7 +172,7 @@ function LandingPage() {
               type="email"
               id="email"
               name="email"
-              className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              className="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-600 dark:focus:border-primary-600 dark:shadow-sm-light block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
               placeholder="name@example.com"
               required
               value={formData.email}
@@ -183,7 +185,7 @@ function LandingPage() {
               id="message"
               name="message"
               rows={6}
-              className="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              className="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-600 dark:focus:border-primary-600 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
               placeholder="Leave a comment..."
               value={formData.message}
               onChange={handleChange}
@@ -191,11 +193,11 @@ function LandingPage() {
           </div>
           <button 
             type="submit" 
-            className="rounded-lg bg-blue-700 px-5 py-3 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-fit dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
+            className="rounded-md bg-primary-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700">
             Send message
           </button>
-        </form>
+
+        </form> 
       </div>
     </section>
 
