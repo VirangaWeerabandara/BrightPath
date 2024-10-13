@@ -5,11 +5,17 @@ import {Player} from '@lottiefiles/react-lottie-player';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png'; 
 import { useNavigate } from 'react-router-dom';
+import { StudentSignUpForm } from '../components/studentSignupForm';
+import { TeacherSignUpForm } from '../components/teacherSignupForm';
 
 function SignupPage() {
 
-  const [openModal, setOpenModal] = useState(false);
-  const emailInputRef = React.createRef<HTMLInputElement>();
+  const [openModalSignIn, setOpenModalSignIn] = useState(false);
+  const [openModalStudentSignUp, setOpenModalStudentSignUp] = useState(false);
+  const [openModalTeacherSignUp, setOpenModalTeacherSignUp] = useState(false);
+  const emailInputRefSignIn = React.createRef<HTMLInputElement>();
+  const emailInputRefStudentSignUp = React.createRef<HTMLInputElement>();
+  const emailInputRefTeacherSignUp = React.createRef<HTMLInputElement>();
   const navigate = useNavigate();
 
   return (
@@ -44,9 +50,14 @@ function SignupPage() {
           <h2 className="mb-6 text-3xl font-bold text-neutral-900">Sign up as a Teacher</h2>
           <p className="mb-8 text-neutral-900">Share your knowledge and inspire students</p>
           <div className='flex items-center justify-center'>
-          <Button outline gradientDuoTone="purpleToBlue" className='font-bold'>
+          <Button onClick={() => setOpenModalTeacherSignUp(true)} outline gradientDuoTone="purpleToBlue" className='font-bold'>
         Teacher Sign Up
       </Button>
+      <TeacherSignUpForm 
+        openModal={openModalTeacherSignUp} 
+        setOpenModal={setOpenModalTeacherSignUp} 
+        emailInputRef={emailInputRefTeacherSignUp} 
+      />
           </div>
 
         </div>
@@ -58,9 +69,14 @@ function SignupPage() {
           <h2 className="mb-6 text-3xl font-bold text-neutral-900">Sign up as a Student</h2>
           <p className="mb-8 text-neutral-900">Start your learning journey today</p>
           <div className='flex items-center justify-center'>
-          <Button outline gradientDuoTone="purpleToBlue" className='font-bold'>
+          <Button outline gradientDuoTone="purpleToBlue" className='font-bold' onClick={() => setOpenModalStudentSignUp(true)}>
         Student Sign Up
       </Button>
+      <StudentSignUpForm 
+        openModal={openModalStudentSignUp} 
+        setOpenModal={setOpenModalStudentSignUp} 
+        emailInputRef={emailInputRefStudentSignUp} 
+      />
           </div>
         </div>
       </div>
@@ -69,14 +85,14 @@ function SignupPage() {
       <div className="absolute -translate-x-1/2 bottom-8 left-1/2">
         <button
           className="text-gray-600 hover:text-gray-800"
-          onClick={() => setOpenModal(true)}
+          onClick={() => setOpenModalSignIn(true)}
         >
           Already have an account? Log in
         </button>
         <SignInForm 
-        openModal={openModal} 
-        setOpenModal={setOpenModal} 
-        emailInputRef={emailInputRef} 
+        openModal={openModalSignIn} 
+        setOpenModal={setOpenModalSignIn} 
+        emailInputRef={emailInputRefSignIn} 
       />
       </div>
     </div>

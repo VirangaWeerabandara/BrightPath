@@ -35,7 +35,7 @@ export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInMod
               Lost Password?
             </a>
           </div>
-          <div className="w-full ">
+          <div className="flex justify-center w-full">
             <Button>Log in to your account</Button>
           </div>
           <div className="flex justify-between text-sm font-medium text-gray-500 dark:text-gray-300">
