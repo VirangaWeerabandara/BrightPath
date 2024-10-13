@@ -1,41 +1,72 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { SignInForm } from '../components/signInForm'
+import { Button } from 'flowbite-react';
+import {Player} from '@lottiefiles/react-lottie-player';
 
 function SignupPage() {
+
+  const [openModal, setOpenModal] = useState(false);
+  const emailInputRef = React.createRef<HTMLInputElement>();
+
+
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* Centered Animated Object */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Player
+          autoplay
+          loop
+          src="https://lottie.host/d4d379ee-9b69-4236-bd72-323ca3bfcdff/IkYgCrPJSD.json"  // Replace with your Lottie JSON URL
+          style={{ 
+            height: '50vw', // Makes the height 50% of the viewport width
+            width: '50vw',  // Makes the width 50% of the viewport width
+            maxWidth: '500px', // Sets a maximum width
+            maxHeight: '500px', // Sets a maximum height
+            minWidth: '100px', // Sets a minimum width
+            minHeight: '100px'  // Sets a minimum height 
+          }}
+        />
+      </div>
       {/* Teacher Signup */}
-      <div className="flex w-1/2 items-center justify-center bg-blue-600">
+      <div className="flex items-center justify-center w-1/2 bg-white">
         <div className="text-center">
-          <h2 className="mb-6 text-3xl font-bold text-white">Sign up as a Teacher</h2>
-          <p className="mb-8 text-white">Share your knowledge and inspire students</p>
-          <button
-            className="rounded-lg bg-white px-4 py-2 font-bold text-blue-600 transition duration-300 hover:bg-blue-100"
-          >
-            Teacher Sign Up
-          </button>
+          <h2 className="mb-6 text-3xl font-bold text-neutral-900">Sign up as a Teacher</h2>
+          <p className="mb-8 text-neutral-900">Share your knowledge and inspire students</p>
+          <div className='flex items-center justify-center'>
+          <Button outline gradientDuoTone="purpleToBlue" className='font-bold'>
+        Teacher Sign Up
+      </Button>
+          </div>
+
         </div>
       </div>
 
       {/* Student Signup */}
-      <div className="flex w-1/2 items-center justify-center bg-green-600">
+      <div className="flex items-center justify-center w-1/2 bg-primary-100">
         <div className="text-center">
-          <h2 className="mb-6 text-3xl font-bold text-white">Sign up as a Student</h2>
-          <p className="mb-8 text-white">Start your learning journey today</p>
-          <button
-            className="rounded-lg bg-white px-4 py-2 font-bold text-green-600 transition duration-300 hover:bg-green-100"
-          >
-            Student Sign Up
-          </button>
+          <h2 className="mb-6 text-3xl font-bold text-neutral-900">Sign up as a Student</h2>
+          <p className="mb-8 text-neutral-900">Start your learning journey today</p>
+          <div className='flex items-center justify-center'>
+          <Button outline gradientDuoTone="purpleToBlue" className='font-bold'>
+        Student Sign Up
+      </Button>
+          </div>
         </div>
       </div>
 
       {/* Back to Login Button */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+      <div className="absolute -translate-x-1/2 bottom-8 left-1/2">
         <button
           className="text-gray-600 hover:text-gray-800"
+          onClick={() => setOpenModal(true)}
         >
           Already have an account? Log in
         </button>
+        <SignInForm 
+        openModal={openModal} 
+        setOpenModal={setOpenModal} 
+        emailInputRef={emailInputRef} 
+      />
       </div>
     </div>
   )
