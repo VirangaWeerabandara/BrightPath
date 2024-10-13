@@ -19,7 +19,9 @@ const studentSchema = new Schema({
     password: {
         type: String,
         required: true,
-    }
+    },
+
+
 });
 
 module.exports = mongoose.model('Student', studentSchema);

@@ -2,15 +2,26 @@ import React, { useState } from 'react'
 import { SignInForm } from '../components/signInForm'
 import { Button } from 'flowbite-react';
 import {Player} from '@lottiefiles/react-lottie-player';
+import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png'; 
+import { useNavigate } from 'react-router-dom';
 
 function SignupPage() {
 
   const [openModal, setOpenModal] = useState(false);
   const emailInputRef = React.createRef<HTMLInputElement>();
-
+  const navigate = useNavigate();
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* Logo at the top-left */}
+      <div onClick={() => navigate('/')} className="absolute top-4 left-4"> {/* Home page link */}
+        <img
+          src={logo} // Replace with the path to your logo
+          alt="Logo"
+          className="w-auto h-10" // Adjust height and width of the logo
+        />
+      </div>
       {/* Centered Animated Object */}
       <div className="absolute inset-0 flex items-center justify-center">
         <Player

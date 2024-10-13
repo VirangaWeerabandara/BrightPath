@@ -19,7 +19,11 @@ const teacherSchema = new Schema({
     password: {
         type: String,
         required: true,
-    }
+    },
+    nic: {
+        type: String,
+        required: true,
+    },
 });
 
 module.exports = mongoose.model('Teacher', teacherSchema);
