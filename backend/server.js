@@ -28,6 +28,15 @@ app.get('/', (req, res) => {
     res.json({msg: 'Welcome to the MERN Stack App'});
 })
 
+app.post('/upload', (req, res) => {
+    uploadImage(req.body.image) 
+    .then(url => {
+        res.send({url})
+    })
+    .catch(err => {
+        res.status(500).send({err})
+    })
+})
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)
     .then(()=>{
