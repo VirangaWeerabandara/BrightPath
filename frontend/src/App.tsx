@@ -2,13 +2,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Im
 import LandingPage from './pages/landingPage';
 import SignupPage from './pages/signupPage';
 import CoursePage from './pages/coursePage';
+import { StudentSignUpForm } from './components/studentSignupForm';
 
 function App() {
   return (
     <Router> {/* Wrap your app with Router */}
       <Routes>
         <Route path="/" element={<LandingPage />} /> {/* Route for the landing page */}
-        <Route path="/signup" element={<SignupPage />} /> {/* Route for the signup page */}
+        <Route path="/signup" element={<CoursePage />} /> {/* Route for the signup page */}
       </Routes>
     </Router>
   );
