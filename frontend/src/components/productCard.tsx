@@ -8,21 +8,21 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ imageUrl, productName, price }) => {
   return (
-    <div className="relative group">
-      <div className="overflow-hidden aspect-w-1 aspect-h-1">
+    <div className="group relative">
+      <div className="aspect-square overflow-hidden">
         <img
-          className="object-cover w-full h-full transition-all duration-300 group-hover:scale-125"
+          className="size-full object-cover transition-all duration-300 group-hover:scale-125"
           src={imageUrl}
           alt={productName}
         />
       </div>
-      <div className="flex items-start justify-between mt-4 space-x-4">
+      <div className="mt-4 flex items-start justify-between space-x-4">
         <div>
           <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-            <a href="#" title={productName}>
+            <button type="button" className="text-left text-xs font-bold text-gray-900 sm:text-sm md:text-base" title={productName}>
               {productName}
               <span className="absolute inset-0" aria-hidden="true"></span>
-            </a>
+            </button>
           </h3>
         </div>
 
