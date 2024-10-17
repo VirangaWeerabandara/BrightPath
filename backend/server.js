@@ -1,12 +1,17 @@
+const uploadImage = require("./config/cloudinaryConfig.js");
+
 require('dotenv').config()
+
 
 const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 
 const app = express()
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ limit: "25mb" }));
 
-const allowedOrigins = [process.env.CORS_ORIGIN, 'http://localhost:3000'];
+const allowedOrigins = [process.env.CORS_ORIGIN];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -37,6 +42,12 @@ app.post('/upload', (req, res) => {
         res.status(500).send({err})
     })
 })
+app.post("/uploadMultipleImages", (req, res) => {
+    uploadImage
+      .uploadMultipleImages(req.body.images)
+      .then((urls) => res.send(urls))
+      .catch((err) => res.status(500).send(err));
+  });
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)
     .then(()=>{

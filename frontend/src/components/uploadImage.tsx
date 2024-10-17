@@ -1,23 +1,18 @@
-import React from "react";
-import { useState } from "react";
-import assets from "../assets/assets.gif";
+import React, { useState } from "react";
 import axios from "axios";
+import logo from "../assets/logo.png";
 
 export default function UploadImage() {
   const [loading, setLoading] = useState(false);
-  const [url, setUrl] = useState("");
+  const [urls, setUrls] = useState<string[] | string>("");
 
-  const convertBase64 = (file: File): Promise<string> => {
+  const convertBase64 = (file: File) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
 
       fileReader.onload = () => {
-        if (fileReader.result) {
-          resolve(fileReader.result.toString());
-        } else {
-          reject(new Error("File reading failed"));
-        }
+        resolve(fileReader.result);
       };
 
       fileReader.onerror = (error) => {
@@ -26,27 +21,29 @@ export default function UploadImage() {
     });
   };
 
-  function uploadSingleImage(base64: string) {
+  function uploadSingleImage(base64: string | ArrayBuffer | null) {
     setLoading(true);
     axios
-      .post("http://localhost:5000/uploadImage", { image: base64 })
+      .post("http://localhost:4000/upload", { image: base64 })
       .then((res) => {
-        setUrl(res.data);
-        alert("Image uploaded Succesfully");
+        // Ensure we're setting the URL properly
+        setUrls(res.data.url); // Expecting `res.data.url` to be a string
+        alert("Image uploaded Successfully");
       })
-      .then(() => setLoading(false))
+      .finally(() => setLoading(false))
       .catch(console.log);
   }
 
   function uploadMultipleImages(images: string[]) {
     setLoading(true);
     axios
-      .post("http://localhost:5000/uploadMultipleImages", { images })
+      .post("http://localhost:4000/uploadMultipleImages", { images })
       .then((res) => {
-        setUrl(res.data);
-        alert("Image uploaded Succesfully");
+        // For multiple images, set the URLs as an array
+        setUrls(res.data.urls); // Expecting `res.data.urls` to be an array of strings
+        alert("Images uploaded Successfully");
       })
-      .then(() => setLoading(false))
+      .finally(() => setLoading(false))
       .catch(console.log);
   }
 
@@ -55,18 +52,17 @@ export default function UploadImage() {
     if (!files) {
       return;
     }
-    console.log(files.length);
 
     if (files.length === 1) {
-      const base64: string = await convertBase64(files[0]);
+      const base64 = (await convertBase64(files[0])) as string | ArrayBuffer | null;
       uploadSingleImage(base64);
       return;
     }
 
-    const base64s = [];
+    const base64s: string[] = [];
     for (var i = 0; i < files.length; i++) {
-      var base: string = await convertBase64(files[i]);
-      base64s.push(base);
+      var base = await convertBase64(files[i]);
+      base64s.push(base as string);
     }
     uploadMultipleImages(base64s);
   };
@@ -76,7 +72,7 @@ export default function UploadImage() {
       <div className="flex items-center justify-center w-full">
         <label
           htmlFor="dropzone-file"
-          className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer dark:hover:bg-bray-800 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+          className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             <svg
@@ -115,26 +111,38 @@ export default function UploadImage() {
   }
 
   return (
-    <div className="flex flex-col justify-center m-8 ">
+    <div className="flex justify-center flex-col m-8">
       <div>
-        <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-center text-gray-900 dark:text-white">
+        <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
           Upload Photo
         </h2>
       </div>
+
       <div>
-        {url && (
+        {/* Handle single and multiple URLs */}
+        {urls && (Array.isArray(urls) ? (
+          urls.map((url, index) => (
+            <div key={index}>
+              Access your file at{" "}
+              <a href={url} target="_blank" rel="noopener noreferrer">
+                {url}
+              </a>
+            </div>
+          ))
+        ) : (
           <div>
-            Access you file at{" "}
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              {url}
+            Access your file at{" "}
+            <a href={urls} target="_blank" rel="noopener noreferrer">
+              {urls}
             </a>
           </div>
-        )}
+        ))}
       </div>
+
       <div>
         {loading ? (
           <div className="flex items-center justify-center">
-            <img src={assets} />{" "}
+            <img src={logo} alt="Loading" />
           </div>
         ) : (
           <UploadInput />

@@ -3,7 +3,7 @@ require('dotenv').config();
 var cloudinary = require('cloudinary').v2;
 
 cloudinary.config({ 
-    cloud_name: 'dvke6mrfk', 
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
     api_key: process.env.CLOUDINARY_API_KEY, 
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
@@ -11,19 +11,41 @@ cloudinary.config({
 const opts = {
     overwrite: true,
     invalidate: true,
-    resource_type: "auto"
-}
-
-module.exports = (image) => {
+    resource_type: "auto",
+  };
+  
+  const uploadImage = (image) => {
+    //imgage = > base64
     return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(image, opts, (err, url) => {
-            if (url && url.secure_url) {
-                console.log(url.secure_url);
-                return resolve(url.secure_url);
-            } else {
-                console.log(err.message);
-                return reject({message: err.message});
-            }
-        })
-    })
-}
+      cloudinary.uploader.upload(image, opts, (error, result) => {
+        if (result && result.secure_url) {
+          console.log(result.secure_url);
+          return resolve(result.secure_url);
+        }
+        console.log(error.message);
+        return reject({ message: error.message });
+      });
+    });
+  };
+  module.exports = (image) => {
+    //imgage = > base64
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(image, opts, (error, result) => {
+        if (result && result.secure_url) {
+          console.log(result.secure_url);
+          return resolve(result.secure_url);
+        }
+        console.log(error.message);
+        return reject({ message: error.message });
+      });
+    });
+  };
+  
+  module.exports.uploadMultipleImages = (images) => {
+    return new Promise((resolve, reject) => {
+      const uploads = images.map((base) => uploadImage(base));
+      Promise.all(uploads)
+        .then((values) => resolve(values))
+        .catch((err) => reject(err));
+    });
+  };
