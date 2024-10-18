@@ -3,14 +3,14 @@ import LandingPage from './pages/landingPage';
 import SignupPage from './pages/signupPage';
 import CoursePage from './pages/coursePage';
 import { StudentSignUpForm } from './components/studentSignupForm';
-import UploadImage from './components/uploadImage';
+import UploadMedia from './components/uploadMedia';
 
 function App() {
   return (
     <Router> {/* Wrap your app with Router */}
       <Routes>
         <Route path="/" element={<LandingPage />} /> {/* Route for the landing page */}
-        <Route path="/signup" element={<UploadImage />} /> {/* Route for the signup page */}
+        <Route path="/signup" element={<UploadMedia />} /> {/* Route for the signup page */}
       </Routes>
     </Router>
   );

@@ -1,51 +1,78 @@
 require('dotenv').config();
-
 var cloudinary = require('cloudinary').v2;
 
-cloudinary.config({ 
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-    api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const opts = {
-    overwrite: true,
-    invalidate: true,
-    resource_type: "auto",
-  };
-  
-  const uploadImage = (image) => {
-    //imgage = > base64
-    return new Promise((resolve, reject) => {
-      cloudinary.uploader.upload(image, opts, (error, result) => {
+  overwrite: true,
+  invalidate: true,
+};
+
+// Function to upload images
+const uploadImage = (image) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      image,
+      { ...opts, resource_type: "image" },
+      (error, result) => {
         if (result && result.secure_url) {
           console.log(result.secure_url);
           return resolve(result.secure_url);
         }
-        console.log(error.message);
+        console.error("Image upload error:", error); // Log full error
         return reject({ message: error.message });
-      });
-    });
-  };
-  module.exports = (image) => {
-    //imgage = > base64
-    return new Promise((resolve, reject) => {
-      cloudinary.uploader.upload(image, opts, (error, result) => {
+      }
+    );
+  });
+};
+
+// Function to upload videos
+const uploadVideo = (video) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      video,
+      { ...opts, resource_type: "video" },
+      (error, result) => {
         if (result && result.secure_url) {
           console.log(result.secure_url);
           return resolve(result.secure_url);
         }
-        console.log(error.message);
+        console.error("Video upload error:", error); // Log full error
         return reject({ message: error.message });
-      });
-    });
-  };
-  
-  module.exports.uploadMultipleImages = (images) => {
-    return new Promise((resolve, reject) => {
+      }
+    );
+  });
+};
+
+// Exporting both uploadImage and uploadVideo
+module.exports = {
+  uploadImage,
+
+  uploadVideo,
+
+  uploadMultipleImages: async (images) => {
+    try {
       const uploads = images.map((base) => uploadImage(base));
-      Promise.all(uploads)
-        .then((values) => resolve(values))
-        .catch((err) => reject(err));
-    });
-  };
+      const values = await Promise.all(uploads);
+      return { urls: values }; // Return array of URLs in an object
+    } catch (err) {
+      console.error("Multiple image upload error:", err); // Log full error
+      throw err;
+    }
+  },
+
+  uploadMultipleVideos: async (videos) => {
+    try {
+      const uploads = videos.map((base) => uploadVideo(base));
+      const values = await Promise.all(uploads);
+      return { urls: values }; // Return array of URLs in an object
+    } catch (err) {
+      console.error("Multiple video upload error:", err); // Log full error
+      throw err;
+    }
+  },
+};

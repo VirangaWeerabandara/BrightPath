@@ -1,4 +1,4 @@
-const uploadImage = require("./config/cloudinaryConfig.js");
+const {uploadImage, uploadVideo, } = require("./config/cloudinaryConfig.js");
 
 require('dotenv').config()
 
@@ -48,6 +48,25 @@ app.post("/uploadMultipleImages", (req, res) => {
       .then((urls) => res.send(urls))
       .catch((err) => res.status(500).send(err));
   });
+
+app.post("/uploadVideo", (req, res) => {
+    uploadVideo(req.body.video)
+    .then(url => {
+        res.send({url})
+    })
+    .catch(err => {
+        res.status(500).send({err})
+    })
+});
+
+app.post("/uploadMultipleVideos", (req, res) => {
+    uploadVideo
+      .uploadMultipleVideos(req.body.videos)
+      .then((urls) => res.send(urls))
+      .catch((err) => res.status(500).send(err));
+  });
+
+
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)
     .then(()=>{

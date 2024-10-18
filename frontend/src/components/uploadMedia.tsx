@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import logo from "../assets/logo.png";
 
-export default function UploadImage() {
+export default function UploadMedia() {
   const [loading, setLoading] = useState(false);
   const [urls, setUrls] = useState<string[] | string>("");
 
@@ -21,52 +21,69 @@ export default function UploadImage() {
     });
   };
 
-  function uploadSingleImage(base64: string | ArrayBuffer | null) {
+  // Function to upload single image or video
+  function uploadSingleMedia(base64: string | ArrayBuffer | null, isVideo: boolean) {
     setLoading(true);
+    const endpoint = isVideo
+      ? "http://localhost:4000/uploadVideo"
+      : "http://localhost:4000/upload";
+    
+    // Change 'media' to 'video' for video uploads and 'image' for image uploads
+    const formData = isVideo ? { video: base64 } : { image: base64 };
+  
     axios
-      .post("http://localhost:4000/upload", { image: base64 })
+      .post(endpoint, formData) 
       .then((res) => {
-        // Ensure we're setting the URL properly
-        setUrls(res.data.url); // Expecting `res.data.url` to be a string
-        alert("Image uploaded Successfully");
+        setUrls(res.data.url);
+        alert(`${isVideo ? "Video" : "Image"} uploaded Successfully`);
       })
       .finally(() => setLoading(false))
       .catch(console.log);
   }
+  
 
-  function uploadMultipleImages(images: string[]) {
+  // Function to upload multiple images or videos
+  function uploadMultipleMedia(files: string[], isVideo: boolean) {
     setLoading(true);
+    const endpoint = isVideo
+      ? "http://localhost:4000/uploadMultipleVideos"
+      : "http://localhost:4000/uploadMultipleImages";
     axios
-      .post("http://localhost:4000/uploadMultipleImages", { images })
+      .post(endpoint, { files }) // Sending the file array
       .then((res) => {
-        // For multiple images, set the URLs as an array
         setUrls(res.data.urls); // Expecting `res.data.urls` to be an array of strings
-        alert("Images uploaded Successfully");
+        alert(`${isVideo ? "Videos" : "Images"} uploaded Successfully`);
       })
       .finally(() => setLoading(false))
       .catch(console.log);
   }
 
-  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle file upload
+  const uploadMedia = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) {
       return;
     }
 
+    // Determine if the file is a video
+    const isVideo = files[0].type.startsWith("video");
+
     if (files.length === 1) {
       const base64 = (await convertBase64(files[0])) as string | ArrayBuffer | null;
-      uploadSingleImage(base64);
+      uploadSingleMedia(base64, isVideo); // Check if it's a video
       return;
     }
 
     const base64s: string[] = [];
     for (var i = 0; i < files.length; i++) {
-      var base = await convertBase64(files[i]);
+      const base = await convertBase64(files[i]);
       base64s.push(base as string);
     }
-    uploadMultipleImages(base64s);
+
+    uploadMultipleMedia(base64s, isVideo); // Upload multiple media
   };
 
+  // Input for upload
   function UploadInput() {
     return (
       <div className="flex items-center justify-center w-full">
@@ -91,19 +108,19 @@ export default function UploadImage() {
               ></path>
             </svg>
             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              <span className="font-semibold">Click to upload</span> or drag and
-              drop
+              <span className="font-semibold">Click to upload</span> or drag and drop
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              SVG, PNG, JPG or GIF (MAX. 800x400px)
+              SVG, PNG, JPG, GIF or MP4 (MAX. 800x400px for images)
             </p>
           </div>
           <input
-            onChange={uploadImage}
+            onChange={uploadMedia}
             id="dropzone-file"
             type="file"
             className="hidden"
             multiple
+            accept="image/*,video/*" // Accept images and videos
           />
         </label>
       </div>
@@ -114,7 +131,7 @@ export default function UploadImage() {
     <div className="flex justify-center flex-col m-8">
       <div>
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
-          Upload Photo
+          Upload Photo or Video
         </h2>
       </div>
 
