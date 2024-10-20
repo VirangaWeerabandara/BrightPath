@@ -10,7 +10,7 @@ function App() {
     <Router> {/* Wrap your app with Router */}
       <Routes>
         <Route path="/" element={<LandingPage />} /> {/* Route for the landing page */}
-        <Route path="/signup" element={<UploadMedia />} /> {/* Route for the signup page */}
+        <Route path="/signup" element={<SignupPage />} /> {/* Route for the signup page */}
       </Routes>
     </Router>
   );
