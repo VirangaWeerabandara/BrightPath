@@ -9,11 +9,11 @@ const {
 const router = express.Router();
 
 //login route
-router.post('/login',loginStudent)
+router.post('/login/student',loginStudent)
 
 
 //signup route
-router.post('/signup',signupStudent)
+router.post('/signup/student',signupStudent)
 
 
 module.exports = router;
