@@ -24,6 +24,10 @@ const teacherSchema = new Schema({
         type: String,
         required: true,
     },
+    courses: {
+        type: Array,
+        required: false,
+    }
 });
 
 module.exports = mongoose.model('Teacher', teacherSchema);

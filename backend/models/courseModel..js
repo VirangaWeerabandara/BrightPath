@@ -11,14 +11,17 @@ const courseSchema = new Schema({
         type: Array,
         required: true,
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
+    thumbnails: {
+        type: Array,
+        required: true
     },
-    password: {
+    teacherId: {
         type: String,
         required: true,
+    },
+    enrolledStudents: {
+        type: Array,
+        required: false,
     }
 });
 
