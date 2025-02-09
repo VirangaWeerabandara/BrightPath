@@ -26,7 +26,7 @@ export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInMod
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/api/student/login/student', {
+      const response = await fetch('http://localhost:4000/api/login/student', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

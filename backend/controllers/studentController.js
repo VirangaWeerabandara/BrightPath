@@ -7,26 +7,9 @@ const createToken = (_id) => {
   if (!process.env.SECRET) {
     throw new Error("JWT SECRET must be defined in environment variables");
   }
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
-};
-
-// Login controller
-const loginStudent = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const student = await Student.login(email, password);
-    const token = createToken(student._id);
-
-    res.status(200).json({
-      email,
-      token,
-      firstName: student.firstName,
-      lastName: student.lastName,
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  return jwt.sign({ _id, role: "student" }, process.env.SECRET, {
+    expiresIn: "3d",
+  });
 };
 
 // Signup controller
@@ -46,13 +29,11 @@ const signupStudent = async (req, res) => {
       token,
       firstName,
       lastName,
+      role: "student",
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-module.exports = {
-  loginStudent,
-  signupStudent,
-};
+module.exports = { signupStudent };

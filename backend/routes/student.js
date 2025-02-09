@@ -1,16 +1,10 @@
 const express = require("express");
-
-const {
-  loginStudent,
-  signupStudent,
-} = require("../controllers/studentController");
+const requireAuth = require("../middleware/requireAuth");
+const { signupStudent } = require("../controllers/studentController");
 
 const router = express.Router();
 
-//login route
-router.post("/login", loginStudent);
-
-//signup route
+// Public routes
 router.post("/signup/student", signupStudent);
 
 module.exports = router;

@@ -5,6 +5,11 @@ const validator = require("validator");
 const Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
+  role: {
+    type: String,
+    default: "student",
+    required: true,
+  },
   firstName: {
     type: String,
     required: true,

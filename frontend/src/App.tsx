@@ -4,15 +4,30 @@ import SignupPage from './pages/signupPage';
 import CoursePage from './pages/coursePage';
 import { StudentSignUpForm } from './components/studentSignupForm';
 import UploadMedia from './components/uploadMedia';
+import { ProtectedRoute } from './components/ProtectedRoutes';
 
 function App() {
   return (
     <Router> {/* Wrap your app with Router */}
       <Routes>
-        <Route path="/" element={<LandingPage />} /> 
-        <Route path="/signup" element={<SignupPage />} /> 
-        <Route path="/course" element={<CoursePage />} /> 
-        <Route path="/upload" element={<UploadMedia />} /> 
+      <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route 
+          path="/upload" 
+          element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <UploadMedia />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/course" 
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <CoursePage />
+            </ProtectedRoute>
+          } 
+        />
 
       </Routes>
     </Router>

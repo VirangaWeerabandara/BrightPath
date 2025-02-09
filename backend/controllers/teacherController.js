@@ -1,44 +1,46 @@
-const Teacher = require('../models/studentModel');
-const jwt = require('jsonwebtoken');
+const Teacher = require("../models/teacherModel");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const createToken = (_id) => {
-    return jwt.sign({_id}, process.env.SECRET, {expiresIn: '3d'});
-}
+  if (!process.env.SECRET) {
+    throw new Error("JWT SECRET must be defined in environment variables");
+  }
+  return jwt.sign({ _id, role: "teacher" }, process.env.SECRET, {
+    expiresIn: "3d",
+  });
+};
 
-//login Student
-const loginTeacher = async (req, res) => {
-    const {email, password} = req.body;
-
-    try{
-        const teacher = await Teacher.login(email, password);
-
-        //create token
-        const token = createToken(teacher._id);
-
-        res.status(201).json({email, token});
-    } catch(error){
-        res.status(400).json({error: error.message});
-    }
-}
-
-//signup Student
 const signupTeacher = async (req, res) => {
-    const {email, password} = req.body;
+  const { firstName, lastName, nic, email, password } = req.body;
 
-    try{
-        const teacher = await Teacher.signup(email, password);
-
-        //create token
-        const token = createToken(teacher._id);
-
-        res.status(201).json({email, token});
-    } catch(error){
-        res.status(400).json({error: error.message});
+  try {
+    if (!firstName || !lastName || !nic || !email || !password) {
+      throw Error("All fields must be filled");
     }
-}
 
+    const teacher = await Teacher.signup(
+      firstName,
+      lastName,
+      nic,
+      email,
+      password
+    );
+    const token = createToken(teacher._id);
+
+    res.status(201).json({
+      email,
+      token,
+      firstName,
+      lastName,
+      nic,
+      role: "teacher",
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 module.exports = {
-    loginTeacher,
-    signupTeacher
-}
+  signupTeacher,
+};

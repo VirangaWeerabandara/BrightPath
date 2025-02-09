@@ -1,17 +1,18 @@
 const { uploadImage, uploadVideo } = require("./config/cloudinaryConfig.js");
-
 require("dotenv").config();
-
 const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 
+// Express app initialization
 const app = express();
+
+// Middleware
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb" }));
 
+// CORS Configuration
 const allowedOrigins = [process.env.CORS_ORIGIN];
-
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -25,15 +26,18 @@ app.use(
   })
 );
 
+// Request Logger
 app.use((req, res, next) => {
-  console.log(req.path, res.path);
+  console.log(req.path, req.method);
   next();
 });
 
+// Welcome Route
 app.get("/", (req, res) => {
-  res.json({ msg: "Welcome to the MERN Stack App" });
+  res.json({ msg: "Welcome to BrightPath Learning Platform" });
 });
 
+// Image Upload Routes
 app.post("/upload", (req, res) => {
   uploadImage(req.body.image)
     .then((url) => {
@@ -43,6 +47,7 @@ app.post("/upload", (req, res) => {
       res.status(500).send({ err });
     });
 });
+
 app.post("/uploadMultipleImages", (req, res) => {
   uploadImage
     .uploadMultipleImages(req.body.images)
@@ -50,6 +55,7 @@ app.post("/uploadMultipleImages", (req, res) => {
     .catch((err) => res.status(500).send(err));
 });
 
+// Video Upload Routes
 app.post("/uploadVideo", (req, res) => {
   uploadVideo(req.body.video)
     .then((url) => {
@@ -67,18 +73,32 @@ app.post("/uploadMultipleVideos", (req, res) => {
     .catch((err) => res.status(500).send(err));
 });
 
+// Route Imports
 const studentRoutes = require("./routes/student");
-app.use("/api", studentRoutes);
+const teacherRoutes = require("./routes/teacher");
+const authRoutes = require("./routes/auth");
 
-// connect to mongodb
+// API Routes
+app.use("/api", authRoutes);
+app.use("/api", studentRoutes);
+app.use("/api", teacherRoutes);
+
+// Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    error: err.message || "Something went wrong!",
+  });
+});
+
+// Database Connection and Server Startup
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    // listen for requests
     app.listen(process.env.PORT, () => {
       console.log("Connected to DB and listening on port", process.env.PORT);
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.error("Database connection error:", err);
   });
