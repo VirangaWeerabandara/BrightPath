@@ -9,8 +9,11 @@ function App() {
   return (
     <Router> {/* Wrap your app with Router */}
       <Routes>
-        <Route path="/" element={<LandingPage />} /> {/* Route for the landing page */}
-        <Route path="/signup" element={<SignupPage />} /> {/* Route for the signup page */}
+        <Route path="/" element={<LandingPage />} /> 
+        <Route path="/signup" element={<SignupPage />} /> 
+        <Route path="/course" element={<CoursePage />} /> 
+        <Route path="/upload" element={<UploadMedia />} /> 
+
       </Routes>
     </Router>
   );

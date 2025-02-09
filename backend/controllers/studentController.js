@@ -1,44 +1,58 @@
-const Student = require('../models/studentModel');
-const jwt = require('jsonwebtoken');
+const Student = require("../models/studentModel");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
+// Create JWT token
 const createToken = (_id) => {
-    return jwt.sign({_id}, process.env.SECRET, {expiresIn: '3d'});
-}
+  if (!process.env.SECRET) {
+    throw new Error("JWT SECRET must be defined in environment variables");
+  }
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
+};
 
-//login Student
+// Login controller
 const loginStudent = async (req, res) => {
-    const {email, password} = req.body;
+  const { email, password } = req.body;
 
-    try{
-        const student = await Student.login(email, password);
+  try {
+    const student = await Student.login(email, password);
+    const token = createToken(student._id);
 
-        //create token
-        const token = createToken(student._id);
+    res.status(200).json({
+      email,
+      token,
+      firstName: student.firstName,
+      lastName: student.lastName,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-        res.status(201).json({email, token});
-    } catch(error){
-        res.status(400).json({error: error.message});
-    }
-}
-
-//signup Student
+// Signup controller
 const signupStudent = async (req, res) => {
-    const {email, password} = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
-    try{
-        const student = await Student.signup(email, password);
-
-        //create token
-        const token = createToken(student._id);
-
-        res.status(201).json({email, token});
-    } catch(error){
-        res.status(400).json({error: error.message});
+  try {
+    if (!firstName || !lastName || !email || !password) {
+      throw Error("All fields must be filled");
     }
-}
 
+    const student = await Student.signup(firstName, lastName, email, password);
+    const token = createToken(student._id);
+
+    res.status(201).json({
+      email,
+      token,
+      firstName,
+      lastName,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 module.exports = {
-    loginStudent,
-    signupStudent
-}
+  loginStudent,
+  signupStudent,
+};

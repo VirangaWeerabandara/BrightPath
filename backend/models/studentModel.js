@@ -1,74 +1,76 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const validator = require('validator');
-
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 const Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
-    firstName: {
-        type: String,
-        required: true,
-    },
-    lastName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-
-
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
 });
 
-studentSchema.statics.signup = async function(firstName, lastName, email, password){
-    if(!email || !password || !firstName || !lastName){
-        throw Error('Email and password are required');
-    }
-    // if(!validator.isEmail(email)){
-    //     throw Error('Email is invalid');
-    // }
-    // if(!validator.isStrongPassword(password)){
-    //     throw Error('Password is not strong enough');
-    // }
+studentSchema.statics.signup = async function (
+  firstName,
+  lastName,
+  email,
+  password
+) {
+  if (!email || !password || !firstName || !lastName) {
+    throw Error("All fields must be filled");
+  }
 
-    const exists = await this.findOne({email})
+  const exists = await this.findOne({ email });
 
-    if(exists){
-        throw Error('User already exists');
-    }
+  if (exists) {
+    throw Error("Email already in use");
+  }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
 
-    const student = await this.create({email, password: hash});
-    return student;
-}
+  const student = await this.create({
+    firstName,
+    lastName,
+    email,
+    password: hash,
+  });
 
-studentSchema.statics.login = async function(email, password){
-    if(!email || !password){
-        throw Error('Email and password are required');
-    }
+  return student;
+};
 
-    const student = await this.findOne({email});
+studentSchema.statics.login = async function (email, password) {
+  if (!email || !password) {
+    throw Error("Email and password are required");
+  }
 
-    if(!student){
-        throw Error('User does not exist');
-    }
+  const student = await this.findOne({ email });
 
-    const match = await bcrypt.compare(password, student.password);
+  if (!student) {
+    throw Error("User does not exist");
+  }
 
-    if(!match){
-        throw Error('Invalid password');
-    }
+  const match = await bcrypt.compare(password, student.password);
 
-    return student;
-}
+  if (!match) {
+    throw Error("Invalid password");
+  }
 
-module.exports = mongoose.model('Student', studentSchema);
+  return student;
+};
+
+module.exports = mongoose.model("Student", studentSchema);
