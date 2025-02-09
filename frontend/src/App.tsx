@@ -5,6 +5,8 @@ import CoursePage from './pages/coursePage';
 import { StudentSignUpForm } from './components/studentSignupForm';
 import UploadMedia from './components/uploadMedia';
 import { ProtectedRoute } from './components/ProtectedRoutes';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
         />
 
       </Routes>
+      <ToastContainer />
     </Router>
   );
 }

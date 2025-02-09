@@ -1,11 +1,14 @@
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { RefObject, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface SignInModalProps {
   openModal: boolean;
   setOpenModal: (open: boolean) => void;
   emailInputRef: RefObject<HTMLInputElement>;
+  setOpenLoginModal: (open: boolean) => void;
 }
 
 interface FormData {
@@ -16,7 +19,12 @@ interface FormData {
   password: string;
 }
 
-export function TeacherSignUpForm({ openModal, setOpenModal, emailInputRef }: SignInModalProps) {
+export function TeacherSignUpForm({ 
+  openModal, 
+  setOpenModal, 
+  emailInputRef,
+  setOpenLoginModal 
+}: SignInModalProps) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -44,15 +52,34 @@ export function TeacherSignUpForm({ openModal, setOpenModal, emailInputRef }: Si
 
       if (!response.ok) {
         setError(json.error);
+        toast.error(json.error);
         return;
       }
 
-      // Save user to local storage with role
-      localStorage.setItem('user', JSON.stringify({ ...json, role: 'teacher' }));
+      // Show success notification
+      toast.success('Registration successful! Please login.');
+      
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        nic: "",
+        email: "",
+        password: ""
+      });
+
+      // Close signup modal
       setOpenModal(false);
-      navigate('/upload'); // Navigate to upload page after successful signup
+
+      // Open login modal after a short delay
+      setTimeout(() => {
+        setOpenLoginModal(true);
+      }, 1000);
+
     } catch (err) {
-      setError('An error occurred during registration');
+      const errorMessage = 'An error occurred during registration';
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

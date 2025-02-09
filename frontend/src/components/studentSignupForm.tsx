@@ -1,18 +1,31 @@
 import { Button, Label, Modal, TextInput } from "flowbite-react";
-import { RefObject } from "react";
-import { useState } from "react";
+import { RefObject, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface SignInModalProps {
   openModal: boolean;
   setOpenModal: (open: boolean) => void;
   emailInputRef: RefObject<HTMLInputElement>;
+  setOpenLoginModal: (open: boolean) => void; // Add this prop
 }
 
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
 
-export function StudentSignUpForm({ openModal, setOpenModal, emailInputRef }: SignInModalProps) {
+export function StudentSignUpForm({ 
+  openModal, 
+  setOpenModal, 
+  emailInputRef,
+  setOpenLoginModal 
+}: SignInModalProps) {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -30,22 +43,40 @@ export function StudentSignUpForm({ openModal, setOpenModal, emailInputRef }: Si
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, role: 'student' })
       });
 
       const json = await response.json();
 
       if (!response.ok) {
         setError(json.error);
+        toast.error(json.error);
+        return;
       }
-      if (response.ok) {
-        // Save user to local storage
-        localStorage.setItem('user', JSON.stringify(json));
-        setOpenModal(false);
-        navigate('/course'); // Navigate to course page after successful signup
-      }
+
+      // Show success notification
+      toast.success('Registration successful! Please login.');
+      
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: ""
+      });
+
+      // Close signup modal
+      setOpenModal(false);
+
+      // Open login modal after a short delay
+      setTimeout(() => {
+        setOpenLoginModal(true);
+      }, 1000);
+
     } catch (err) {
-      setError('An error occurred during registration');
+      const errorMessage = 'An error occurred during registration';
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -99,6 +130,7 @@ export function StudentSignUpForm({ openModal, setOpenModal, emailInputRef }: Si
               required
               value={formData.email}
               onChange={handleChange}
+              ref={emailInputRef}
             />
           </div>
 
@@ -124,43 +156,3 @@ export function StudentSignUpForm({ openModal, setOpenModal, emailInputRef }: Si
     </Modal>
   );
 }
-
-// export function StudentSignUpForm({ openModal, setOpenModal, emailInputRef }: SignInModalProps) {
-//   return (
-//     <Modal show={openModal} size="md" popup onClose={() => setOpenModal(false)} initialFocus={emailInputRef}>
-//       <Modal.Header />
-//       <Modal.Body>
-//         <div className="space-y-6">
-//           <h3 className="text-xl font-medium text-gray-900 dark:text-white">Sign in to <span className="text-primary-600 font-semibold">BrightPath</span></h3>
-//           <div>
-//             <div className="mb-2 block">
-//               <Label htmlFor="email" value="First Name" />
-//             </div>
-//             <TextInput id="email" ref={emailInputRef} placeholder="John" required />
-//           </div>
-//           <div>
-//             <div className="mb-2 block">
-//               <Label htmlFor="email" value="Last Name" />
-//             </div>
-//             <TextInput id="email" ref={emailInputRef} placeholder="Doe" required />
-//           </div>
-//           <div>
-//             <div className="mb-2 block">
-//               <Label htmlFor="email" value="Your Email" />
-//             </div>
-//             <TextInput id="email" ref={emailInputRef} placeholder="name@company.com" required />
-//           </div>
-//           <div>
-//             <div className="mb-2 block">
-//               <Label htmlFor="password" value="Your Password" />
-//             </div>
-//             <TextInput id="password" type="password" required />
-//           </div>
-//           <div className="flex w-full justify-center">
-//             <Button>Create Account</Button>
-//           </div>
-//         </div>
-//       </Modal.Body>
-//     </Modal>
-//   );
-// }

@@ -1,6 +1,8 @@
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { RefObject, useState, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface SignInModalProps {
   openModal: boolean;
@@ -26,26 +28,53 @@ export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInMod
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/api/login/student', {
+      // First try student login
+      const studentResponse = await fetch('http://localhost:4000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, role: 'student' })
       });
 
-      const json = await response.json();
+      const studentJson = await studentResponse.json();
 
-      if (!response.ok) {
-        setError(json.error);
+      if (studentResponse.ok) {
+        // Student login successful
+        localStorage.setItem('user', JSON.stringify(studentJson));
+        setOpenModal(false);
+        toast.success('Welcome back, student!');
+        navigate('/course');
         return;
       }
 
-      localStorage.setItem('user', JSON.stringify(json));
-      setOpenModal(false);
-      navigate('/course');
+      // If student login fails, try teacher login
+      const teacherResponse = await fetch('http://localhost:4000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...formData, role: 'teacher' })
+      });
+
+      const teacherJson = await teacherResponse.json();
+
+      if (teacherResponse.ok) {
+        // Teacher login successful
+        localStorage.setItem('user', JSON.stringify(teacherJson));
+        setOpenModal(false);
+        toast.success('Welcome back, teacher!');
+        navigate('/upload');
+        return;
+      }
+
+      // If both logins fail
+      setError('Invalid email or password');
+      toast.error('Login failed. Please check your credentials.');
+
     } catch (err) {
       setError('An error occurred during login');
+      toast.error('An error occurred during login');
     }
   };
 
