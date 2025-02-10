@@ -29,6 +29,7 @@ const login = async (req, res) => {
     token = createToken(user._id, role);
 
     res.status(200).json({
+      _id: user._id,
       email,
       token,
       firstName: user.firstName,

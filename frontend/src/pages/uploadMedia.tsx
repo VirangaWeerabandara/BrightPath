@@ -110,39 +110,56 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
 
-  // Validate required fields
-  if (!courseData.name || !courseData.description || !courseData.category) {
-    toast.error("Please fill in all required fields");
-    setLoading(false);
-    return;
-  }
-
-  if (courseData.videos.length === 0) {
-    toast.error("Please upload at least one video");
-    setLoading(false);
-    return;
-  }
-
-  if (courseData.thumbnails.length === 0) {
-    toast.error("Please upload at least one thumbnail");
-    setLoading(false);
-    return;
-  }
-
   try {
     const { token, user } = getAuthToken();
-    if (!user._id) {
-      toast.error("User information not found");
-      setLoading(false);
+    
+    // Enhanced validation
+    if (!token || !user) {
+      toast.error("Please login again");
+      navigate('/login');
       return;
     }
 
+    // Debug log to check user object
+    console.log('User data:', user);
+
+    if (!user._id) {
+      toast.error("User ID not found. Please login again");
+      navigate('/login');
+      return;
+    }
+
+    // Validate required fields
+    if (!courseData.name || !courseData.description || !courseData.category) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (courseData.videos.length === 0) {
+      toast.error("Please upload at least one video");
+      return;
+    }
+
+    if (courseData.thumbnails.length === 0) {
+      toast.error("Please upload at least one thumbnail");
+      return;
+    }
+
+    const coursePayload = {
+      name: courseData.name,
+      description: courseData.description,
+      category: courseData.category,
+      videos: courseData.videos,
+      thumbnails: courseData.thumbnails,
+      teacherId: user._id
+    };
+
+    // Debug log to check payload
+    console.log('Course payload:', coursePayload);
+
     const response = await axios.post(
       'http://localhost:4000/api/courses/create',
-      {
-        ...courseData,
-        teacherId: user._id,
-      },
+      coursePayload,
       {
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -153,12 +170,18 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     if (response.data.success) {
       toast.success("Course created successfully!");
-      navigate('/teacher/courses');
+      setCourseData({
+        name: "",
+        description: "",
+        category: "",
+        videos: [],
+        thumbnails: [],
+      });
     } else {
       toast.error(response.data.message || "Failed to create course");
     }
   } catch (error: any) {
-    console.error("Course creation error:", error);
+    console.error("Course creation error:", error.response?.data || error);
     toast.error(error.response?.data?.message || "Failed to create course");
   } finally {
     setLoading(false);

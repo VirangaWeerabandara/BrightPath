@@ -41,10 +41,14 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     const teacherData = await teacherResponse.json();
 
     if (teacherResponse.ok) {
-      // Store both token and user data for teacher
+      // Store token and teacher data directly from response
       localStorage.setItem('token', teacherData.token);
       localStorage.setItem('user', JSON.stringify({
-        ...teacherData.user,
+        _id: teacherData._id,
+        email: teacherData.email,
+        firstName: teacherData.firstName,
+        lastName: teacherData.lastName,
+        nic: teacherData.nic,
         role: 'teacher'
       }));
       
@@ -66,10 +70,13 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     const studentData = await studentResponse.json();
 
     if (studentResponse.ok) {
-      // Store both token and user data for student
+      // Store token and student data directly from response
       localStorage.setItem('token', studentData.token);
       localStorage.setItem('user', JSON.stringify({
-        ...studentData.user,
+        _id: studentData._id,
+        email: studentData.email,
+        firstName: studentData.firstName,
+        lastName: studentData.lastName,
         role: 'student'
       }));
       
