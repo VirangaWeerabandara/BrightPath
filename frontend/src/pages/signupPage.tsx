@@ -23,11 +23,15 @@ function SignupPage() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Logo at the top-left */}
-      <div onClick={() => navigate('/')} className="absolute top-4 left-4">
+      <div 
+        onClick={() => navigate('/')} 
+        className="absolute top-4 left-4 z-50 cursor-pointer hover:opacity-80 transition-opacity"
+      >
         <img
           src={logo}
           alt="Logo"
           className="w-auto h-10"
+          style={{ cursor: 'pointer' }}
         />
       </div>
 

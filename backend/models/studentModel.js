@@ -27,6 +27,10 @@ const studentSchema = new Schema({
     type: String,
     required: true,
   },
+  courses: {
+    type: Array,
+    default: [],
+  },
 });
 
 studentSchema.statics.signup = async function (

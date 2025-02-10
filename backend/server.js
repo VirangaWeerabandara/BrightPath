@@ -77,11 +77,13 @@ app.post("/uploadMultipleVideos", (req, res) => {
 const studentRoutes = require("./routes/student");
 const teacherRoutes = require("./routes/teacher");
 const authRoutes = require("./routes/auth");
+const courseRoutes = require("./routes/course"); // Add this line
 
 // API Routes
 app.use("/api", authRoutes);
 app.use("/api", studentRoutes);
 app.use("/api", teacherRoutes);
+app.use("/api", courseRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

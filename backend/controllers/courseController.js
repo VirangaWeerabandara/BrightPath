@@ -1,324 +1,423 @@
-const Course = require('../models/courseModel');
-const Course = require('../models/Course');
-const Teacher = require('../models/Teacher');
-const mongoose = require('mongoose');
+const Course = require("../models/courseModel");
+const Teacher = require("../models/teacherModel");
+const Student = require("../models/studentModel");
+const mongoose = require("mongoose");
 
 // Helper function to handle errors
 const handleError = (error, res) => {
-    console.error('Error:', error);
-    return res.status(500).json({
-        success: false,
-        message: 'An error occurred',
-        error: error.message
-    });
+  console.error("Error:", error);
+  return res.status(500).json({
+    success: false,
+    message: "An error occurred",
+    error: error.message,
+  });
 };
 
+// Create Course
 const createCourse = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    try {
-        const { name, videos, thumbnails, teacherId } = req.body;
+  try {
+    const { name, description, videos, thumbnails, teacherId, category } =
+      req.body;
 
-        if (!name || !videos || !thumbnails || !teacherId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields'
-            });
-        }
-
-        const teacher = await Teacher.findById(teacherId);
-        if (!teacher) {
-            return res.status(404).json({
-                success: false,
-                message: 'Teacher not found'
-            });
-        }
-
-        const newCourse = new Course({
-            name,
-            videos,
-            thumbnails,
-            teacherId,
-            enrolledStudents: []
-        });
-
-        const savedCourse = await newCourse.save({ session });
-
-        await Teacher.findByIdAndUpdate(
-            teacherId,
-            { $push: { courses: savedCourse._id } },
-            { session }
-        );
-
-        await session.commitTransaction();
-        
-        return res.status(201).json({
-            success: true,
-            message: 'Course created successfully',
-            data: savedCourse
-        });
-    } catch (error) {
-        await session.abortTransaction();
-        return handleError(error, res);
-    } finally {
-        session.endSession();
+    // Validate required fields
+    if (
+      !name ||
+      !description ||
+      !videos ||
+      !thumbnails ||
+      !teacherId ||
+      !category
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        requiredFields: {
+          name: !name,
+          description: !description,
+          videos: !videos,
+          thumbnails: !thumbnails,
+          teacherId: !teacherId,
+          category: !category,
+        },
+      });
     }
-}
 
+    // Validate teacher exists
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: "Teacher not found",
+      });
+    }
+
+    const newCourse = new Course({
+      name,
+      description,
+      videos,
+      thumbnails,
+      teacherId,
+      category,
+      enrolledStudents: [],
+    });
+
+    const savedCourse = await newCourse.save({ session });
+
+    // Add course to teacher's courses array
+    await Teacher.findByIdAndUpdate(
+      teacherId,
+      { $push: { courses: savedCourse._id } },
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    return res.status(201).json({
+      success: true,
+      message: "Course created successfully",
+      data: savedCourse,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    return handleError(error, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+// Get All Courses
 const getAllCourses = async (req, res) => {
-    try {
-        const courses = await Course.find();
-        return res.status(200).json({
-            success: true,
-            count: courses.length,
-            data: courses
-        });
-    } catch (error) {
-        return handleError(error, res);
-    }
-}
+  try {
+    const courses = await Course.find()
+      .populate("teacherId", "firstName lastName email")
+      .select("-enrolledStudents");
 
+    return res.status(200).json({
+      success: true,
+      count: courses.length,
+      data: courses,
+    });
+  } catch (error) {
+    return handleError(error, res);
+  }
+};
+
+// Get Course By ID
 const getCourseById = async (req, res) => {
-    try {
-        const course = await Course.findById(req.params.id);
-        
-        if (!course) {
-            return res.status(404).json({
-                success: false,
-                message: 'Course not found'
-            });
-        }
+  try {
+    const { id } = req.params;
 
-        const teacher = await Teacher.findById(course.teacherId, 'firstName lastName email');
-
-        return res.status(200).json({
-            success: true,
-            data: {
-                course,
-                teacher
-            }
-        });
-    } catch (error) {
-        return handleError(error, res);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid course ID format",
+      });
     }
-}
 
-updateCourse = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    const course = await Course.findById(id)
+      .populate("teacherId", "firstName lastName email")
+      .populate("enrolledStudents", "firstName lastName email");
 
-    try {
-        const updates = req.body;
-        const courseId = req.params.id;
-
-        if (updates.teacherId) {
-            const oldCourse = await Course.findById(courseId);
-            if (!oldCourse) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Course not found'
-                });
-            }
-
-            await Teacher.findByIdAndUpdate(
-                oldCourse.teacherId,
-                { $pull: { courses: courseId } },
-                { session }
-            );
-
-            const newTeacher = await Teacher.findById(updates.teacherId);
-            if (!newTeacher) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'New teacher not found'
-                });
-            }
-
-            await Teacher.findByIdAndUpdate(
-                updates.teacherId,
-                { $push: { courses: courseId } },
-                { session }
-            );
-        }
-
-        const course = await Course.findByIdAndUpdate(
-            courseId,
-            { $set: updates },
-            { new: true, runValidators: true, session }
-        );
-
-        if (!course) {
-            return res.status(404).json({
-                success: false,
-                message: 'Course not found'
-            });
-        }
-
-        await session.commitTransaction();
-
-        return res.status(200).json({
-            success: true,
-            message: 'Course updated successfully',
-            data: course
-        });
-    } catch (error) {
-        await session.abortTransaction();
-        return handleError(error, res);
-    } finally {
-        session.endSession();
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
     }
-}
 
+    return res.status(200).json({
+      success: true,
+      data: course,
+    });
+  } catch (error) {
+    return handleError(error, res);
+  }
+};
+
+// Update Course
+const updateCourse = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid course ID format",
+      });
+    }
+
+    // If teacher is being changed, handle the course reference updates
+    if (updates.teacherId) {
+      const oldCourse = await Course.findById(id);
+      if (!oldCourse) {
+        return res.status(404).json({
+          success: false,
+          message: "Course not found",
+        });
+      }
+
+      // Remove course from old teacher
+      await Teacher.findByIdAndUpdate(
+        oldCourse.teacherId,
+        { $pull: { courses: id } },
+        { session }
+      );
+
+      // Add course to new teacher
+      const newTeacher = await Teacher.findById(updates.teacherId);
+      if (!newTeacher) {
+        return res.status(404).json({
+          success: false,
+          message: "New teacher not found",
+        });
+      }
+
+      await Teacher.findByIdAndUpdate(
+        updates.teacherId,
+        { $push: { courses: id } },
+        { session }
+      );
+    }
+
+    const course = await Course.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true, runValidators: true, session }
+    ).populate("teacherId", "firstName lastName email");
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    await session.commitTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: "Course updated successfully",
+      data: course,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    return handleError(error, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+// Delete Course
 const deleteCourse = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    try {
-        const courseId = req.params.id;
-        const course = await Course.findById(courseId);
+  try {
+    const { id } = req.params;
 
-        if (!course) {
-            return res.status(404).json({
-                success: false,
-                message: 'Course not found'
-            });
-        }
-
-        await Teacher.findByIdAndUpdate(
-            course.teacherId,
-            { $pull: { courses: courseId } },
-            { session }
-        );
-
-        await Course.findByIdAndDelete(courseId).session(session);
-
-        await session.commitTransaction();
-
-        return res.status(200).json({
-            success: true,
-            message: 'Course deleted successfully'
-        });
-    } catch (error) {
-        await session.abortTransaction();
-        return handleError(error, res);
-    } finally {
-        session.endSession();
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid course ID format",
+      });
     }
-}
 
+    const course = await Course.findById(id);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // Remove course from teacher's courses array
+    await Teacher.findByIdAndUpdate(
+      course.teacherId,
+      { $pull: { courses: id } },
+      { session }
+    );
+
+    await Course.findByIdAndDelete(id).session(session);
+
+    await session.commitTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: "Course deleted successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    return handleError(error, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+// Get Courses by Teacher
 const getCoursesByTeacher = async (req, res) => {
-    try {
-        const teacherId = req.params.teacherId;
-        
-        const teacher = await Teacher.findById(teacherId);
-        if (!teacher) {
-            return res.status(404).json({
-                success: false,
-                message: 'Teacher not found'
-            });
-        }
+  try {
+    const { teacherId } = req.params;
 
-        const courses = await Course.find({ teacherId });
-
-        return res.status(200).json({
-            success: true,
-            count: courses.length,
-            data: {
-                teacher: {
-                    firstName: teacher.firstName,
-                    lastName: teacher.lastName,
-                    email: teacher.email
-                },
-                courses
-            }
-        });
-    } catch (error) {
-        return handleError(error, res);
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid teacher ID format",
+      });
     }
-}
 
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: "Teacher not found",
+      });
+    }
+
+    const courses = await Course.find({ teacherId }).populate(
+      "enrolledStudents",
+      "firstName lastName email"
+    );
+
+    return res.status(200).json({
+      success: true,
+      count: courses.length,
+      data: {
+        teacher: {
+          firstName: teacher.firstName,
+          lastName: teacher.lastName,
+          email: teacher.email,
+        },
+        courses,
+      },
+    });
+  } catch (error) {
+    return handleError(error, res);
+  }
+};
+
+// Enroll Student in Course
 const enrollStudent = async (req, res) => {
-    try {
-        const { studentId } = req.body;
-        const courseId = req.params.id;
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-        const course = await Course.findById(courseId);
+  try {
+    const { studentId } = req.body;
+    const { id: courseId } = req.params;
 
-        if (!course) {
-            return res.status(404).json({
-                success: false,
-                message: 'Course not found'
-            });
-        }
-
-        if (course.enrolledStudents.includes(studentId)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Student already enrolled in this course'
-            });
-        }
-
-        course.enrolledStudents.push(studentId);
-        await course.save();
-
-        return res.status(200).json({
-            success: true,
-            message: 'Student enrolled successfully',
-            data: course
-        });
-    } catch (error) {
-        return handleError(error, res);
+    if (
+      !mongoose.Types.ObjectId.isValid(courseId) ||
+      !mongoose.Types.ObjectId.isValid(studentId)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format",
+      });
     }
-}
 
+    // Check if student exists
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // Check if student is already enrolled
+    if (course.enrolledStudents.includes(studentId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Student already enrolled in this course",
+      });
+    }
+
+    course.enrolledStudents.push(studentId);
+    await course.save({ session });
+
+    // Add course to student's enrolled courses (if you have this field in your student model)
+    await Student.findByIdAndUpdate(
+      studentId,
+      { $push: { enrolledCourses: courseId } },
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: "Student enrolled successfully",
+      data: course,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    return handleError(error, res);
+  } finally {
+    session.endSession();
+  }
+};
+
+// Get Teacher Course Statistics
 const getTeacherCourseStats = async (req, res) => {
-    try {
-        const teacherId = req.params.teacherId;
+  try {
+    const { teacherId } = req.params;
 
-        const stats = await Course.aggregate([
-            { $match: { teacherId } },
-            { 
-                $group: {
-                    _id: null,
-                    totalCourses: { $sum: 1 },
-                    totalStudents: { 
-                        $sum: { $size: "$enrolledStudents" } 
-                    },
-                    averageStudentsPerCourse: { 
-                        $avg: { $size: "$enrolledStudents" } 
-                    }
-                }
-            }
-        ]);
-
-        if (stats.length === 0) {
-            return res.status(200).json({
-                success: true,
-                data: {
-                    totalCourses: 0,
-                    totalStudents: 0,
-                    averageStudentsPerCourse: 0
-                }
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            data: stats[0]
-        });
-    } catch (error) {
-        return handleError(error, res);
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid teacher ID format",
+      });
     }
-}
+
+    const stats = await Course.aggregate([
+      { $match: { teacherId: new mongoose.Types.ObjectId(teacherId) } },
+      {
+        $group: {
+          _id: null,
+          totalCourses: { $sum: 1 },
+          totalStudents: { $sum: { $size: "$enrolledStudents" } },
+          averageStudentsPerCourse: { $avg: { $size: "$enrolledStudents" } },
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data:
+        stats.length > 0
+          ? stats[0]
+          : {
+              totalCourses: 0,
+              totalStudents: 0,
+              averageStudentsPerCourse: 0,
+            },
+    });
+  } catch (error) {
+    return handleError(error, res);
+  }
+};
 
 module.exports = {
-    createCourse,
-    getAllCourses,
-    getCourseById,
-    updateCourse,
-    deleteCourse,
-    getCoursesByTeacher,
-    enrollStudent,
-    getTeacherCourseStats
+  createCourse,
+  getAllCourses,
+  getCourseById,
+  updateCourse,
+  deleteCourse,
+  getCoursesByTeacher,
+  enrollStudent,
+  getTeacherCourseStats,
 };
