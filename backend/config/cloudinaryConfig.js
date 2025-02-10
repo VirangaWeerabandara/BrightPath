@@ -27,38 +27,42 @@ const opts = {
   resource_type: "auto",
 };
 
-// ... rest of your existing cloudinaryConfig.js code ...
-
-// Function to upload images
 const uploadImage = (image) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       image,
-      { ...opts, resource_type: "image" },
+      {
+        ...opts,
+        resource_type: "image",
+        folder: "BrightPath_Images", // Specify folder for images
+      },
       (error, result) => {
         if (result && result.secure_url) {
           console.log(result.secure_url);
           return resolve(result.secure_url);
         }
-        console.error("Image upload error:", error); // Log full error
+        console.error("Image upload error:", error);
         return reject({ message: error.message });
       }
     );
   });
 };
 
-// Function to upload videos
 const uploadVideo = (video) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       video,
-      { ...opts, resource_type: "video" },
+      {
+        ...opts,
+        resource_type: "video",
+        folder: "BrightPath_Videos", // Specify folder for videos
+      },
       (error, result) => {
         if (result && result.secure_url) {
           console.log(result.secure_url);
           return resolve(result.secure_url);
         }
-        console.error("Video upload error:", error); // Log full error
+        console.error("Video upload error:", error);
         return reject({ message: error.message });
       }
     );

@@ -3,7 +3,7 @@ import LandingPage from './pages/landingPage';
 import SignupPage from './pages/signupPage';
 import CoursePage from './pages/coursePage';
 import { StudentSignUpForm } from './components/studentSignupForm';
-import UploadMedia from './components/uploadMedia';
+import UploadMedia from './pages/uploadMedia';
 import { ProtectedRoute } from './components/ProtectedRoutes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
