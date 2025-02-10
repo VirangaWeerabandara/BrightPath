@@ -1,24 +1,42 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Import Router and Route components
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/landingPage';
 import SignupPage from './pages/signupPage';
 import CoursePage from './pages/coursePage';
-import { StudentSignUpForm } from './components/studentSignupForm';
-import UploadMedia from './pages/uploadMedia';
+import DashboardPage from './pages/dashboardPage';
+import CreateCourse from './pages/createCoursePage';
+import ProfilePage from './pages/teacherProfilePage';
+import TeacherCoursePage from './pages/teacherCoursePage';
 import { ProtectedRoute } from './components/ProtectedRoutes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <Router> {/* Wrap your app with Router */}
+    <Router>
       <Routes>
-      <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route 
-          path="/upload" 
+          path="/dashboard" 
           element={
             <ProtectedRoute allowedRoles={['teacher']}>
-              <UploadMedia />
+              <DashboardPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/create-course" 
+          element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <CreateCourse />
+            </ProtectedRoute>
+          } 
+        />
+                <Route 
+          path="/my-courses" 
+          element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <TeacherCoursePage />
             </ProtectedRoute>
           } 
         />
@@ -30,7 +48,14 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
+        <Route 
+  path="/profile" 
+  element={
+    <ProtectedRoute allowedRoles={['teacher']}>
+      <ProfilePage />
+    </ProtectedRoute>
+  } 
+/>
       </Routes>
       <ToastContainer />
     </Router>

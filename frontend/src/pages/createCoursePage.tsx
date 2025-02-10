@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import logo from "../assets/logo.png";
+import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
 
-export default function UploadMediaPage() {
+export default function CreateCoursePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [courseData, setCourseData] = useState({
@@ -189,6 +190,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 };
 
   return (
+    <DashboardLayout>
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Create New Course</h1>
 
@@ -294,5 +296,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
       </form>
     </div>
+    </DashboardLayout>
   );
 }

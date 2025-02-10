@@ -54,7 +54,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
       
       setOpenModal(false);
       toast.success('Welcome back, teacher!');
-      navigate('/upload');
+      navigate('/dashboard');
       return;
     }
 
