@@ -23,60 +23,72 @@ export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInMod
   });
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
+// Update the handleSubmit function with proper data handling
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError(null);
 
-    try {
-      // First try student login
-      const studentResponse = await fetch('http://localhost:4000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...formData, role: 'student' })
-      });
+  try {
+    // Try teacher login first
+    const teacherResponse = await fetch('http://localhost:4000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...formData, role: 'teacher' })
+    });
 
-      const studentJson = await studentResponse.json();
+    const teacherData = await teacherResponse.json();
 
-      if (studentResponse.ok) {
-        // Student login successful
-        localStorage.setItem('user', JSON.stringify(studentJson));
-        setOpenModal(false);
-        toast.success('Welcome back, student!');
-        navigate('/course');
-        return;
-      }
-
-      // If student login fails, try teacher login
-      const teacherResponse = await fetch('http://localhost:4000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...formData, role: 'teacher' })
-      });
-
-      const teacherJson = await teacherResponse.json();
-
-      if (teacherResponse.ok) {
-        // Teacher login successful
-        localStorage.setItem('user', JSON.stringify(teacherJson));
-        setOpenModal(false);
-        toast.success('Welcome back, teacher!');
-        navigate('/upload');
-        return;
-      }
-
-      // If both logins fail
-      setError('Invalid email or password');
-      toast.error('Login failed. Please check your credentials.');
-
-    } catch (err) {
-      setError('An error occurred during login');
-      toast.error('An error occurred during login');
+    if (teacherResponse.ok) {
+      // Store both token and user data for teacher
+      localStorage.setItem('token', teacherData.token);
+      localStorage.setItem('user', JSON.stringify({
+        ...teacherData.user,
+        role: 'teacher'
+      }));
+      
+      setOpenModal(false);
+      toast.success('Welcome back, teacher!');
+      navigate('/upload');
+      return;
     }
-  };
+
+    // If teacher login fails, try student login
+    const studentResponse = await fetch('http://localhost:4000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...formData, role: 'student' })
+    });
+
+    const studentData = await studentResponse.json();
+
+    if (studentResponse.ok) {
+      // Store both token and user data for student
+      localStorage.setItem('token', studentData.token);
+      localStorage.setItem('user', JSON.stringify({
+        ...studentData.user,
+        role: 'student'
+      }));
+      
+      setOpenModal(false);
+      toast.success('Welcome back, student!');
+      navigate('/course');
+      return;
+    }
+
+    // If both logins fail
+    setError(studentData.message || 'Invalid email or password');
+    toast.error('Login failed. Please check your credentials.');
+
+  } catch (err) {
+    console.error('Login error:', err);
+    setError('An error occurred during login');
+    toast.error('An error occurred during login');
+  }
+};
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
