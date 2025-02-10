@@ -37,53 +37,18 @@ app.get("/", (req, res) => {
   res.json({ msg: "Welcome to BrightPath Learning Platform" });
 });
 
-// Image Upload Routes
-app.post("/upload", (req, res) => {
-  uploadImage(req.body.image)
-    .then((url) => {
-      res.send({ url });
-    })
-    .catch((err) => {
-      res.status(500).send({ err });
-    });
-});
-
-app.post("/uploadMultipleImages", (req, res) => {
-  uploadImage
-    .uploadMultipleImages(req.body.images)
-    .then((urls) => res.send(urls))
-    .catch((err) => res.status(500).send(err));
-});
-
-// Video Upload Routes
-app.post("/uploadVideo", (req, res) => {
-  uploadVideo(req.body.video)
-    .then((url) => {
-      res.send({ url });
-    })
-    .catch((err) => {
-      res.status(500).send({ err });
-    });
-});
-
-app.post("/uploadMultipleVideos", (req, res) => {
-  uploadVideo
-    .uploadMultipleVideos(req.body.videos)
-    .then((urls) => res.send(urls))
-    .catch((err) => res.status(500).send(err));
-});
-
-// Route Imports
 const studentRoutes = require("./routes/student");
 const teacherRoutes = require("./routes/teacher");
 const authRoutes = require("./routes/auth");
-const courseRoutes = require("./routes/course"); // Add this line
+const courseRoutes = require("./routes/course");
+const uploadRoutes = require("./routes/upload"); // Add this line
 
 // API Routes
 app.use("/api", authRoutes);
 app.use("/api", studentRoutes);
 app.use("/api", teacherRoutes);
 app.use("/api", courseRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

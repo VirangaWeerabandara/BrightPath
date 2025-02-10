@@ -1,6 +1,20 @@
-require('dotenv').config();
-var cloudinary = require('cloudinary').v2;
+require("dotenv").config();
+const cloudinary = require("cloudinary").v2;
 
+// Validate environment variables
+const requiredEnvVars = [
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+];
+
+requiredEnvVars.forEach((varName) => {
+  if (!process.env[varName]) {
+    throw new Error(`Missing required environment variable: ${varName}`);
+  }
+});
+
+// Configure cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -10,7 +24,10 @@ cloudinary.config({
 const opts = {
   overwrite: true,
   invalidate: true,
+  resource_type: "auto",
 };
+
+// ... rest of your existing cloudinaryConfig.js code ...
 
 // Function to upload images
 const uploadImage = (image) => {
