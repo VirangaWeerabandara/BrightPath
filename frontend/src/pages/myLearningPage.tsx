@@ -7,6 +7,7 @@ import { FaChevronLeft, FaChevronRight, FaUserCircle } from 'react-icons/fa';
 import { Button } from 'flowbite-react';
 import { useEffect, useRef } from 'react';
 import { SignInForm } from '../components/signInForm';
+import { useCourses } from '../hooks/useCourses';
 
 
 const COURSE_CATEGORIES = [
@@ -38,6 +39,8 @@ const MyLearningPage = () => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [openModal, setOpenModal] = useState(false);
     const emailInputRef = useRef<HTMLInputElement>(null);
+    const { courses, loading, error } = useCourses(selectedCategory);
+
               
     const scrollCategories = (direction: 'left' | 'right') => {
         const container = document.getElementById('categories-container');
@@ -219,131 +222,22 @@ const MyLearningPage = () => {
     </p>
 </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4">
-            <div className="group relative">
-                <div className="aspect-w-1 aspect-h-1 overflow-hidden">
-                    <img className="size-full object-cover transition-all duration-300 group-hover:scale-125" src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-1.png" alt="" />
-                </div>
-                <div className="absolute left-3 top-3">
-                    <p className="rounded-full bg-white px-1.5 py-1 text-[8px] font-bold uppercase tracking-wide text-gray-900 sm:px-3 sm:py-1.5 sm:text-xs">New</p>
-                </div>
-                <div className="mt-4 flex items-start justify-between space-x-4">
-                    <div>
-                        <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                            <button type="button" className="text-left text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                                Beoplay M5 Bluetooth Speaker
-                                <span className="absolute inset-0" aria-hidden="true"></span>
-                            </button>
-                        </h3>
-                    </div>
-
-                    <div className="text-right">
-                        <p className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">$99.00</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="group relative">
-                <div className="aspect-w-1 aspect-h-1 overflow-hidden">
-                    <img className="size-full object-cover transition-all duration-300 group-hover:scale-125" src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-2.png" alt="" />
-                </div>
-                <div className="mt-4 flex items-start justify-between space-x-4">
-                    <div>
-                        <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                            <button type="button" className="text-left text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                                Apple Smart Watch 6 - Special Edition
-                                <span className="absolute inset-0" aria-hidden="true"></span>
-                            </button>
-                        </h3>
-                    </div>
-
-                    <div className="text-right">
-                        <p className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">$299.00</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="group relative">
-                <div className="aspect-w-1 aspect-h-1 overflow-hidden">
-                    <img className="size-full object-cover transition-all duration-300 group-hover:scale-125" src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-2.png" alt="" />
-                </div>
-                <div className="mt-4 flex items-start justify-between space-x-4">
-                    <div>
-                        <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                            <a href="#" title="">
-                                Apple Smart Watch 6 - Special Edition
-                                <span className="absolute inset-0" aria-hidden="true"></span>
-                            </a>
-                        </h3>
-                        
-                    </div>
-
-                    <div className="text-right">
-                        <p className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">$299.00</p>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <ProductCard
-                    imageUrl="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-2.png"
-                    productName="Apple Smart Watch 8 - Special Edition"
-                    price={299.00}
-                />
-            </div>
-
-            <div>
-                <ProductCard
-                    imageUrl="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-2.png"
-                    productName="Apple Smart Watch 8 - Special Edition"
-                    price={299.00}
-                />
-            </div>
-
-            <div className="group relative">
-                <div className="aspect-w-1 aspect-h-1 overflow-hidden">
-                    <img className="size-full object-cover transition-all duration-300 group-hover:scale-125" src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-3.png" alt="" />
-                </div>
-                <div className="absolute left-3 top-3">
-                    <p className="rounded-full bg-gray-900 px-1.5 py-1 text-[8px] font-bold uppercase tracking-wide text-white sm:px-3 sm:py-1.5 sm:text-xs">Sale</p>
-                </div>
-                <div className="mt-4 flex items-start justify-between space-x-4">
-                    <div>
-                        <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                            <button type="button" className="text-left text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                                Beylob 90 Speaker
-                                <span className="absolute inset-0" aria-hidden="true"></span>
-                            </button>
-                        </h3>
-                    </div>
-
-                    <div className="text-right">
-                        <p className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">$49.00</p>
-                        <del className="mt-0.5 text-xs font-bold text-gray-500 sm:text-sm"> $99.00 </del>
-                    </div>
-                </div>
-            </div>
-
-            <div className="group relative">
-                <div className="aspect-w-1 aspect-h-1 overflow-hidden">
-                    <img className="size-full object-cover transition-all duration-300 group-hover:scale-125" src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/item-cards/4/product-4.png" alt="" />
-                </div>
-                <div className="mt-4 flex items-start justify-between space-x-4">
-                    <div>
-                        <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                            <button type="button" className="text-left text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-                                Martino 75 Bluetooth
-                                <span className="absolute inset-0" aria-hidden="true"></span>
-                            </button>
-                        </h3>
-                    </div>
-
-                    <div className="text-right">
-                        <p className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">$79.00</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4">
+    {loading ? (
+      <p>Loading courses...</p>
+    ) : error ? (
+      <p>Error: {error}</p>
+    ) : (
+      courses.map((course) => (
+        <ProductCard
+          key={course._id}
+          imageUrl={course.thumbnails[0]} // Using first thumbnail
+          courseName={course.name}
+          category={course.category}
+        />
+      ))
+    )}
+  </div>
     </div>
 </section>
 </>
