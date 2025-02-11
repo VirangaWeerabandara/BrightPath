@@ -8,6 +8,7 @@ import { Button } from 'flowbite-react';
 import { useEffect, useRef } from 'react';
 import { SignInForm } from '../components/signInForm';
 import { useCourses } from '../hooks/useCourses';
+import CourseDetailsCard from '../components/courseDetailsCard';
 
 
 const COURSE_CATEGORIES = [
@@ -22,12 +23,7 @@ const COURSE_CATEGORIES = [
     "Marketing",
     "Music",
     "Photography",
-    "dasds",
-    "dasds",
-    "dasds",
-    "dasds",
-    "dasds",
-    "dasds",
+
   ];
 
 const CoursePage = () => {  
@@ -40,7 +36,9 @@ const CoursePage = () => {
     const [openModal, setOpenModal] = useState(false);
     const emailInputRef = useRef<HTMLInputElement>(null);
     const { courses, loading, error } = useCourses(selectedCategory);
-
+    const [selectedCourse, setSelectedCourse] = useState<any>(null);
+    const [showModal, setShowModal] = useState(false);
+  
               
     const scrollCategories = (direction: 'left' | 'right') => {
         const container = document.getElementById('categories-container');
@@ -60,6 +58,11 @@ const CoursePage = () => {
         // Optionally reset search query when changing category
         setSearchQuery('');
     };
+
+    const handleCourseClick = (course: any) => {
+        setSelectedCourse(course);
+        setShowModal(true);
+      };
 
     const handleSignInSuccess = (userData: any) => {
         setUser(userData);
@@ -243,14 +246,29 @@ const CoursePage = () => {
             </p>
         </div>
     ) : (
-        courses.map((course) => (
-            <ProductCard
-                key={course._id}
-                imageUrl={course.thumbnails[0]}
-                courseName={course.name}
-                category={course.category}
-            />
-        ))
+<>
+  {courses.map((course) => (
+    <ProductCard
+      key={course._id}
+      imageUrl={course.thumbnails[0]}
+      courseName={course.name}
+      category={course.category}
+      _id={course._id}
+      description={course.description}
+      onClick={() => handleCourseClick(course)}
+    />
+  ))}
+  
+  {selectedCourse && (
+    <CourseDetailsCard
+      show={showModal}
+      onClose={() => setShowModal(false)}
+      course={selectedCourse}
+      isLoggedIn={!!user}
+    />
+  )}
+</>
+        
     )}
 </div>
     </div>

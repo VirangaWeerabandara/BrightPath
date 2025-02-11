@@ -9,6 +9,7 @@ import TeacherCoursePage from './pages/teacherCoursePage';
 import { ProtectedRoute } from './components/ProtectedRoutes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MyLearningPage from './pages/myLearningPage';
 
 function App() {
   return (
@@ -32,11 +33,19 @@ function App() {
             </ProtectedRoute>
           } 
         />
-                <Route 
+        <Route 
           path="/my-courses" 
           element={
             <ProtectedRoute allowedRoles={['teacher']}>
               <TeacherCoursePage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/my-learning" 
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <MyLearningPage />
             </ProtectedRoute>
           } 
         />

@@ -1,19 +1,27 @@
 import React from 'react';
+import defaultThumbnail from '../assets/default-course-thumbnail.png'; // Add a default thumbnail image
 
 interface ProductCardProps {
-  imageUrl: string;
+  imageUrl?: string;
   courseName: string;
   category: string;
+  description: string;
+  _id: string;
+  onClick: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ imageUrl, courseName, category }) => {
+
+const ProductCard: React.FC<ProductCardProps> = ({ imageUrl, courseName, category, onClick }) => {
   return (
-    <div className="group relative">
+    <div className="group relative cursor-pointer" onClick={onClick}>
       <div className="aspect-square overflow-hidden">
         <img
           className="size-full object-cover transition-all duration-300 group-hover:scale-125"
-          src={imageUrl}
+          src={imageUrl || defaultThumbnail}
           alt={courseName}
+          onError={(e) => {
+            e.currentTarget.src = defaultThumbnail;
+          }}
         />
       </div>
       <div className="absolute left-3 top-3">

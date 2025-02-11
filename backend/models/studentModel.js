@@ -4,34 +4,39 @@ const validator = require("validator");
 
 const Schema = mongoose.Schema;
 
-const studentSchema = new Schema({
-  role: {
-    type: String,
-    default: "student",
-    required: true,
+const studentSchema = new Schema(
+  {
+    role: {
+      type: String,
+      default: "student",
+      required: true,
+    },
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    courses: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
   },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  courses: {
-    type: Array,
-    default: [],
-  },
-});
+  { timestamps: true }
+);
 
 studentSchema.statics.signup = async function (
   firstName,

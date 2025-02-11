@@ -8,27 +8,10 @@ import { Button } from 'flowbite-react';
 import { useEffect, useRef } from 'react';
 import { SignInForm } from '../components/signInForm';
 import { useCourses } from '../hooks/useCourses';
+import { useEnrolledCourses } from '../hooks/useEnrolledCourses';
 
 
-const COURSE_CATEGORIES = [
-    "All",
-    "Programming",
-    "Web Development",
-    "Mobile Development",
-    "Data Science",
-    "Machine Learning",
-    "Design",
-    "Business",
-    "Marketing",
-    "Music",
-    "Photography",
-    "dasds",
-    "dasds",
-    "dasds",
-    "dasds",
-    "dasds",
-    "dasds",
-  ];
+
 
 const MyLearningPage = () => {  
     const navigate = useNavigate();
@@ -39,7 +22,7 @@ const MyLearningPage = () => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [openModal, setOpenModal] = useState(false);
     const emailInputRef = useRef<HTMLInputElement>(null);
-    const { courses, loading, error } = useCourses(selectedCategory);
+    const { courses = [], loading, error } = useEnrolledCourses();
 
               
     const scrollCategories = (direction: 'left' | 'right') => {
@@ -181,27 +164,7 @@ const MyLearningPage = () => {
             <FaChevronLeft className="text-gray-700" />
         </button>
 
-        {/* Categories container */}
-        <div 
-            id="categories-container"
-            className="flex items-center justify-start space-x-2 overflow-x-hidden px-8"
-        >
-            {COURSE_CATEGORIES.map((category) => (
-                <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`
-                        px-6 py-2 rounded-lg whitespace-nowrap transition-all duration-200
-                        ${selectedCategory === category 
-                            ? 'bg-primary-600 text-white font-semibold shadow-lg'
-                            : 'bg-white/70 backdrop-blur-sm hover:bg-white/90 text-gray-700 hover:text-gray-900'
-                        }
-                    `}
-                >
-                    {category}
-                </button>
-            ))}
-        </div>
+
 
         {/* Right scroll button */}
         <button 
@@ -221,23 +184,41 @@ const MyLearningPage = () => {
         Explore our {selectedCategory.toLowerCase()} courses and start learning today
     </p>
 </div>
-
 <div className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4">
-    {loading ? (
-      <p>Loading courses...</p>
-    ) : error ? (
-      <p>Error: {error}</p>
-    ) : (
-      courses.map((course) => (
-        <ProductCard
-          key={course._id}
-          imageUrl={course.thumbnails[0]} // Using first thumbnail
-          courseName={course.name}
-          category={course.category}
-        />
-      ))
-    )}
-  </div>
+          {loading ? (
+            <div className="col-span-full text-center py-10">
+              <p className="text-lg text-gray-600">Loading your courses...</p>
+            </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-10">
+              <p className="text-lg text-red-600">Error: {error}</p>
+            </div>
+          ) : courses?.length === 0 ? ( // Add optional chaining
+            <div className="col-span-full text-center py-10">
+              <div className="space-y-4">
+                <p className="text-lg text-gray-600">You haven't enrolled in any courses yet</p>
+                <Button
+                  onClick={() => navigate('/courses')}
+                  gradientDuoTone="purpleToBlue"
+                >
+                  Browse Courses
+                </Button>
+              </div>
+            </div>
+          ) : (
+            courses?.map((course) => ( // Add optional chaining
+              <ProductCard
+                key={course._id}
+                imageUrl={course.thumbnails?.[0]} // Add optional chaining
+                courseName={course.name}
+                category={course.category}
+                _id={course._id}
+                description={course.description}
+                onClick={() => navigate(`/course/${course._id}`)}
+              />
+            ))
+          )}
+          </div>
     </div>
 </section>
 </>
