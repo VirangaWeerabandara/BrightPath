@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { FaTrash } from 'react-icons/fa';
 import { Progress, Button } from 'flowbite-react';
 import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
 import {env} from '../config/env.config';
+import { FaTrash, FaCheckCircle } from 'react-icons/fa';
 
 const COURSE_CATEGORIES = [
   "Programming",
@@ -25,7 +25,8 @@ interface VideoItem {
   id: string;
   videoUrl: string;
   thumbnailUrl: string;
-  uploadProgress: number;
+  videoUploadProgress: number;
+  thumbnailUploadProgress: number;
   name: string;
 }
 
@@ -90,20 +91,15 @@ export default function CreateCoursePage() {
     try {
       const { token } = getAuthToken();
       if (!token) {
-        toast.error("Please login to upload files");
         navigate('/login');
         return;
       }
   
-      // Create form data
       const formData = new FormData();
       formData.append('file', file);
   
-      // Use the correct API endpoint
       const endpoint = type === 'video' ? 'video' : 'image';
       const url = `${env.apiUrl}/upload/${endpoint}`;
-  
-      console.log('Uploading to:', url); // Debug log
   
       const response = await axios.post(
         url,
@@ -118,7 +114,12 @@ export default function CreateCoursePage() {
               (progressEvent.loaded * 100) / (progressEvent.total || 1)
             );
             setVideos(prevVideos => prevVideos.map(v => 
-              v.id === videoId ? { ...v, uploadProgress: progress } : v
+              v.id === videoId 
+                ? { 
+                    ...v, 
+                    [`${type}UploadProgress`]: progress 
+                  } 
+                : v
             ));
           }
         }
@@ -129,24 +130,24 @@ export default function CreateCoursePage() {
           v.id === videoId 
             ? { 
                 ...v, 
-                [type === 'video' ? 'videoUrl' : 'thumbnailUrl']: response.data.url,
-                uploadProgress: 100
+                [`${type}Url`]: response.data.url,
+                [`${type}UploadProgress`]: 100
               } 
             : v
         ));
-  
-        toast.success(`${type} uploaded successfully`);
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error: any) {
       console.error("Upload error:", error);
       setVideos(prevVideos => prevVideos.map(v => 
-        v.id === videoId ? { ...v, uploadProgress: 0 } : v
+        v.id === videoId 
+          ? { 
+              ...v, 
+              [`${type}UploadProgress`]: 0 
+            } 
+          : v
       ));
-      
-      const errorMessage = error.response?.data?.message || error.message || `Failed to upload ${type}`;
-      toast.error(errorMessage);
     }
   };
 
@@ -229,7 +230,8 @@ export default function CreateCoursePage() {
       id: Date.now().toString(),
       videoUrl: '',
       thumbnailUrl: '',
-      uploadProgress: 0,
+      videoUploadProgress: 0,
+      thumbnailUploadProgress: 0,
       name: `Video ${prev.length + 1}`
     }]);
   };
@@ -242,13 +244,13 @@ export default function CreateCoursePage() {
           <Button
             onClick={handleSubmit}
             disabled={loading}
-            color="blue"
+            color="purple"
           >
             {loading ? 'Creating...' : 'Create Course'}
           </Button>
         </div>
 
-        <form className="max-w-4xl mx-auto space-y-6">
+        <form className="max-w-8xl mx-auto space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">Course Name</label>
             <input
@@ -296,7 +298,7 @@ export default function CreateCoursePage() {
               <h2 className="text-xl font-semibold">Course Content</h2>
               <Button
                 onClick={addNewVideoRow}
-                color="success"
+                color="purple"
               >
                 Add Video
               </Button>
@@ -309,58 +311,90 @@ export default function CreateCoursePage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Video Name</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Video</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thumbnail</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Progress</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {videos.map((video) => (
-                    <tr key={video.id}>
-                      <td className="px-6 py-4">
-                        <input
-                          type="text"
-                          value={video.name}
-                          onChange={(e) => {
-                            setVideos(prevVideos => prevVideos.map(v => 
-                              v.id === video.id ? { ...v, name: e.target.value } : v
-                            ));
-                          }}
-                          className="border rounded px-2 py-1 w-full"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <input
-                          type="file"
-                          accept="video/*"
-                          onChange={(e) => handleFileUpload(e, video.id, 'video')}
-                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleFileUpload(e, video.id, 'thumbnail')}
-                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <Progress
-                          progress={video.uploadProgress}
-                          size="sm"
-                          color="blue"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(video.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
+// Replace the existing table row code (inside the videos.map) with this:
+                  // Replace the existing table row code (inside the videos.map) with this:
+                  <tr key={video.id}>
+  <td className="px-6 py-4">
+    <input
+      type="text"
+      value={video.name}
+      onChange={(e) => {
+        setVideos(prevVideos => prevVideos.map(v => 
+          v.id === video.id ? { ...v, name: e.target.value } : v
+        ));
+      }}
+      className="border rounded px-2 py-1 w-full"
+    />
+  </td>
+  <td className="px-6 py-4">
+    <div className="space-y-2">
+      <input
+        type="file"
+        accept="video/*"
+        onChange={(e) => handleFileUpload(e, video.id, 'video')}
+        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+      />
+<div className="flex items-center space-x-2">
+  <div className="flex-grow h-1 bg-gray-200 rounded">
+    {video.videoUploadProgress > 0 && (
+      <div
+        className={`h-full rounded transition-all duration-300 ${
+          video.videoUrl ? 'bg-green-500' : 'bg-blue-500'
+        }`}
+        style={{ width: `${video.videoUploadProgress}%` }}
+      />
+    )}
+  </div>
+  <FaCheckCircle 
+    className={`transition-colors duration-300 text-lg ${
+      video.videoUrl ? 'text-green-500' : 'text-gray-300'
+    }`} 
+  />
+</div>
+    </div>
+  </td>
+  <td className="px-6 py-4">
+    <div className="space-y-2">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleFileUpload(e, video.id, 'thumbnail')}
+        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+      />
+<div className="flex items-center space-x-2">
+  <div className="flex-grow h-1 bg-gray-200 rounded">
+    {video.thumbnailUploadProgress > 0 && (
+      <div
+        className={`h-full rounded transition-all duration-300 ${
+          video.thumbnailUrl ? 'bg-green-500' : 'bg-blue-500'
+        }`}
+        style={{ width: `${video.thumbnailUploadProgress}%` }}
+      />
+    )}
+  </div>
+  <FaCheckCircle 
+    className={`transition-colors duration-300 text-lg ${
+      video.thumbnailUrl ? 'text-green-500' : 'text-gray-300'
+    }`} 
+  />
+</div>
+    </div>
+  </td>
+  <td className="px-6 py-4">
+    <button
+      type="button"
+      onClick={() => handleDelete(video.id)}
+      className="text-red-600 hover:text-red-900"
+    >
+      <FaTrash />
+    </button>
+  </td>
+</tr>  
                   ))}
                 </tbody>
               </table>
