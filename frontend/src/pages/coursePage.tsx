@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import background from '../assets/background2.png';
 import logo from '../assets/logo.png';
@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react';
 import { SignInForm } from '../components/signInForm';
 import { useCourses } from '../hooks/useCourses';
 import CourseDetailsCard from '../components/courseDetailsCard';
-
+import SettingsCard from '../components/SettingsCard';
 
 const COURSE_CATEGORIES = [
     "All",
@@ -38,7 +38,8 @@ const CoursePage = () => {
     const { courses, loading, error } = useCourses(selectedCategory);
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
     const [showModal, setShowModal] = useState(false);
-  
+    const [showSettings, setShowSettings] = useState(false);
+
               
     const scrollCategories = (direction: 'left' | 'right') => {
         const container = document.getElementById('categories-container');
@@ -53,6 +54,12 @@ const CoursePage = () => {
             });
         }
     };
+
+    const handleProfileUpdate = (userData: any) => {
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      };
+    
     const handleCategorySelect = (category: string) => {
         setSelectedCategory(category);
         // Optionally reset search query when changing category
@@ -80,6 +87,15 @@ const CoursePage = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const filteredCourses = courses.filter(course => {
+        const searchTerms = searchQuery.toLowerCase();
+        return (
+          course.name.toLowerCase().includes(searchTerms) ||
+          course.category.toLowerCase().includes(searchTerms) ||
+          course.description.toLowerCase().includes(searchTerms)
+        );
+      });
 
     return (
         <>
@@ -132,14 +148,14 @@ const CoursePage = () => {
                     <span>My Learning</span>
                 </button>
                 <button
-                    onClick={() => {
-                        navigate('/settings');
-                        setIsDropdownOpen(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80 flex items-center space-x-2"
-                >
-                    <span>Settings</span>
-                </button>
+    onClick={() => {
+      setShowSettings(true);
+      setIsDropdownOpen(false);
+    }}
+    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+  >
+    Settings
+  </button>
                 <hr className="my-1 border-gray-200" />
                 <button
                     onClick={() => {
@@ -245,33 +261,46 @@ const CoursePage = () => {
                 No courses available in {selectedCategory.toLowerCase()} category
             </p>
         </div>
+    ) : filteredCourses.length === 0 ? (
+        <div className="col-span-full text-center py-10">
+            <p className="text-lg text-gray-600">
+                No courses match your search "{searchQuery}"
+            </p>
+        </div>
     ) : (
-<>
-  {courses.map((course) => (
-    <ProductCard
-      key={course._id}
-      imageUrl={course.thumbnails[0]}
-      courseName={course.name}
-      category={course.category}
-      _id={course._id}
-      description={course.description}
-      onClick={() => handleCourseClick(course)}
-    />
-  ))}
-  
-  {selectedCourse && (
-    <CourseDetailsCard
-      show={showModal}
-      onClose={() => setShowModal(false)}
-      course={selectedCourse}
-      isLoggedIn={!!user}
-    />
-  )}
-</>
-        
+        <>
+            {filteredCourses.map((course) => (
+                <ProductCard
+                    key={course._id}
+                    imageUrl={course.thumbnails[0]}
+                    courseName={course.name}
+                    category={course.category}
+                    _id={course._id}
+                    description={course.description}
+                    onClick={() => handleCourseClick(course)}
+                />
+            ))}
+            
+            {selectedCourse && (
+                <CourseDetailsCard
+                    show={showModal}
+                    onClose={() => setShowModal(false)}
+                    course={selectedCourse}
+                    isLoggedIn={!!user}
+                />
+            )}
+        </>
     )}
 </div>
     </div>
+    {user && (
+    <SettingsCard
+      show={showSettings}
+      onClose={() => setShowSettings(false)}
+      user={user}
+      onUpdateSuccess={handleProfileUpdate}
+    />
+  )}
 </section>
 </>
     )

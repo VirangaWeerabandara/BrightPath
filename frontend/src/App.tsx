@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/landingPage';
 import SignupPage from './pages/signupPage';
 import CoursePage from './pages/coursePage';
@@ -10,9 +10,12 @@ import { ProtectedRoute } from './components/ProtectedRoutes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import MyLearningPage from './pages/myLearningPage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
+    <>
+    <Toaster position="top-right" />
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -61,6 +64,7 @@ function App() {
       </Routes>
       <ToastContainer />
     </Router>
+    </>
   );
 }
 

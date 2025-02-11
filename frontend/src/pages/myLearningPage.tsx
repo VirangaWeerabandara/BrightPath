@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import background from '../assets/background2.png';
 import logo from '../assets/logo.png';
 import ProductCard from '../components/productCard';
-import { FaChevronLeft, FaChevronRight, FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle,FaArrowLeft } from 'react-icons/fa';
 import { Button } from 'flowbite-react';
 import { useEffect, useRef } from 'react';
 import { SignInForm } from '../components/signInForm';
-import { useCourses } from '../hooks/useCourses';
 import { useEnrolledCourses } from '../hooks/useEnrolledCourses';
+import SettingsCard from '../components/SettingsCard';
 
 
 
@@ -16,32 +16,28 @@ import { useEnrolledCourses } from '../hooks/useEnrolledCourses';
 const MyLearningPage = () => {  
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All");   
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [openModal, setOpenModal] = useState(false);
     const emailInputRef = useRef<HTMLInputElement>(null);
     const { courses = [], loading, error } = useEnrolledCourses();
-
-              
-    const scrollCategories = (direction: 'left' | 'right') => {
-        const container = document.getElementById('categories-container');
-        if (container) {
-            const scrollAmount = 200;
-            const scrollTo = direction === 'left' 
-                ? container.scrollLeft - scrollAmount 
-                : container.scrollLeft + scrollAmount;
-            container.scrollTo({
-                left: scrollTo,
-                behavior: 'smooth'
-            });
-        }
-    };
+    const [showSettings, setShowSettings] = useState(false);
 
     const handleSignInSuccess = (userData: any) => {
         setUser(userData);
     };
+
+    const handleProfileUpdate = (userData: any) => {
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      };
+
+    const filteredCourses = courses.filter(course => 
+        course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -107,14 +103,14 @@ const MyLearningPage = () => {
                     <span>My Learning</span>
                 </button>
                 <button
-                    onClick={() => {
-                        navigate('/settings');
-                        setIsDropdownOpen(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80 flex items-center space-x-2"
-                >
-                    <span>Settings</span>
-                </button>
+  onClick={() => {
+    setShowSettings(true);
+    setIsDropdownOpen(false);
+  }}
+  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+>
+  Settings
+</button>
                 <hr className="my-1 border-gray-200" />
                 <button
                     onClick={() => {
@@ -154,72 +150,76 @@ const MyLearningPage = () => {
             </div>
         </div>
     </div>
-<div className="mx-auto max-w-8xl px-4 sm:px-4 lg:px-4 py-2">
-    <div className="relative px-10">
-        {/* Left scroll button */}
-        <button 
-            onClick={() => scrollCategories('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-lg hover:bg-white/90 transition-all"
+
+    <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 mt-2">
+    <div className="flex items-center justify-between mb-10 relative">
+        <div 
+            onClick={() => navigate('/courses')}
+            className="flex items-center cursor-pointer group"
         >
-            <FaChevronLeft className="text-gray-700" />
-        </button>
-
-
-
-        {/* Right scroll button */}
-        <button 
-            onClick={() => scrollCategories('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-lg hover:bg-white/90 transition-all"
-        >
-            <FaChevronRight className="text-gray-700" />
-        </button>
+            <FaArrowLeft className="w-6 h-6 text-gray-600 group-hover:text-primary-600 transition-colors duration-200" />
+            <span className="ml-2 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                Browse Courses
+            </span>
+        </div>
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+                My Courses
+            </h2>
+        </div>
     </div>
 </div>
-    <div className="mx-auto max-w-7.5xl px-2 sm:px-4 lg:px-6">
-    <div className="mx-auto max-w-md text-center">
-    <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-        {selectedCategory} Courses
-    </h2>
-    <p className="mt-4 text-base font-normal leading-7 text-gray-600">
-        Explore our {selectedCategory.toLowerCase()} courses and start learning today
-    </p>
-</div>
+<div className="mx-auto max-w-7.5xl px-4 sm:px-6 lg:px-8">
 <div className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4">
-          {loading ? (
-            <div className="col-span-full text-center py-10">
-              <p className="text-lg text-gray-600">Loading your courses...</p>
-            </div>
-          ) : error ? (
-            <div className="col-span-full text-center py-10">
-              <p className="text-lg text-red-600">Error: {error}</p>
-            </div>
-          ) : courses?.length === 0 ? ( // Add optional chaining
-            <div className="col-span-full text-center py-10">
-              <div className="space-y-4">
-                <p className="text-lg text-gray-600">You haven't enrolled in any courses yet</p>
-                <Button
-                  onClick={() => navigate('/courses')}
-                  gradientDuoTone="purpleToBlue"
-                >
-                  Browse Courses
-                </Button>
-              </div>
-            </div>
-          ) : (
-            courses?.map((course) => ( // Add optional chaining
-              <ProductCard
-                key={course._id}
-                imageUrl={course.thumbnails?.[0]} // Add optional chaining
-                courseName={course.name}
-                category={course.category}
-                _id={course._id}
-                description={course.description}
-                onClick={() => navigate(`/course/${course._id}`)}
-              />
-            ))
-          )}
-          </div>
+  {loading ? (
+    <div className="col-span-full text-center py-10">
+      <p className="text-lg text-gray-600">Loading your courses...</p>
     </div>
+  ) : error ? (
+    <div className="col-span-full text-center py-10">
+      <p className="text-lg text-red-600">Error: {error}</p>
+    </div>
+  ) : courses?.length === 0 ? (
+    <div className="col-span-full text-center py-10">
+      <div className="space-y-4">
+        <p className="text-lg text-gray-600">You haven't enrolled in any courses yet</p>
+        <Button
+          onClick={() => navigate('/courses')}
+          gradientDuoTone="purpleToBlue"
+        >
+          Browse Courses
+        </Button>
+      </div>
+    </div>
+  ) : filteredCourses.length === 0 ? (
+    <div className="col-span-full text-center py-10">
+      <p className="text-lg text-gray-600">
+        No courses match your search "{searchQuery}"
+      </p>
+    </div>
+  ) : (
+    filteredCourses.map((course) => (
+      <ProductCard
+        key={course._id}
+        imageUrl={course.thumbnails?.[0]}
+        courseName={course.name}
+        category={course.category}
+        _id={course._id}
+        description={course.description}
+        onClick={() => navigate(`/course/${course._id}`)}
+      />
+    ))
+  )}
+</div>
+    </div>
+    {user && (
+  <SettingsCard
+    show={showSettings}
+    onClose={() => setShowSettings(false)}
+    user={user}
+    onUpdateSuccess={handleProfileUpdate}
+  />
+)}
 </section>
 </>
     )

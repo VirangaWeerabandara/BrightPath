@@ -13,6 +13,7 @@ import { SignInForm } from '../components/signInForm';
 import { useNavigate } from 'react-router-dom';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 import { FaUserCircle } from 'react-icons/fa';
+import SettingsCard from '../components/SettingsCard';
 
 interface FeatureCardProps {
   icon: string;
@@ -40,9 +41,15 @@ function LandingPage() {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
 
     const handleSignInSuccess = (userData: any) => {
       setUser(userData);
+  };
+
+  const handleProfileUpdate = (userData: any) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   useEffect(() => {
@@ -113,14 +120,14 @@ function LandingPage() {
                     <span>My Learning</span>
                 </button>
                 <button
-                    onClick={() => {
-                        navigate('/settings');
-                        setIsDropdownOpen(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80 flex items-center space-x-2"
-                >
-                    <span>Settings</span>
-                </button>
+  onClick={() => {
+    setShowSettings(true);
+    setIsDropdownOpen(false);
+  }}
+  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+>
+  Settings
+</button>
                 <hr className="my-1 border-gray-200" />
                 <button
                     onClick={() => {
@@ -282,6 +289,14 @@ function LandingPage() {
 
         </form> 
       </div>
+      {user && (
+  <SettingsCard
+    show={showSettings}
+    onClose={() => setShowSettings(false)}
+    user={user}
+    onUpdateSuccess={handleProfileUpdate}
+  />
+)}
     </section>
 
 <Footer container className="bg-primary-100">

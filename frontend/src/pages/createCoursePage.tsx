@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import axios from "axios";
-import { Progress, Button } from 'flowbite-react';
+import {  Button } from 'flowbite-react';
 import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
 import {env} from '../config/env.config';
 import { FaTrash, FaCheckCircle } from 'react-icons/fa';

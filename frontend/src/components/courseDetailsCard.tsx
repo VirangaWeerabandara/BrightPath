@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'flowbite-react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { env } from '../config/env.config';
 
 interface CourseDetailsModalProps {

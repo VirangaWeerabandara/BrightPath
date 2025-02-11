@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '../components/layout/TeacherDashboardLayout';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { env } from '../config/env.config';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';

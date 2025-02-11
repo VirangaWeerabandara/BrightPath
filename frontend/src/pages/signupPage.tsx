@@ -5,8 +5,7 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useNavigate } from 'react-router-dom';
 import { StudentSignUpForm } from '../components/studentSignupForm';
 import { TeacherSignUpForm } from '../components/teacherSignupForm';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Toaster } from 'react-hot-toast';
 import logo from '../assets/logo.png';
 
 function SignupPage() {
@@ -116,16 +115,21 @@ function SignupPage() {
       </div>
 
       {/* Toast Container */}
-      <ToastContainer
+      <Toaster
         position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 2000,
+          },
+        }}
       />
     </div>
   );
