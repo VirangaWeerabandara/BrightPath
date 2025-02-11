@@ -1,20 +1,16 @@
-const {
-  uploadImage,
-  uploadVideo,
-  uploadMultipleImages,
-  uploadMultipleVideos,
-} = require("../config/cloudinaryConfig");
+const { uploadImage, uploadVideo } = require("../config/cloudinaryConfig");
 
 // Single image upload controller
 const uploadSingleImage = async (req, res) => {
   try {
-    if (!req.body.image) {
+    if (!req.files || !req.files.file) {
       return res.status(400).json({
         success: false,
-        message: "No image provided",
+        message: "No image file provided",
       });
     }
-    const url = await uploadImage(req.body.image);
+    const file = req.files.file;
+    const url = await uploadImage(file);
     res.status(200).json({ success: true, url });
   } catch (error) {
     console.error("Image upload error:", error);
@@ -26,37 +22,17 @@ const uploadSingleImage = async (req, res) => {
   }
 };
 
-// Multiple images upload controller
-const uploadMultipleImagesHandler = async (req, res) => {
-  try {
-    if (!req.body.images || !Array.isArray(req.body.images)) {
-      return res.status(400).json({
-        success: false,
-        message: "No images provided or invalid format",
-      });
-    }
-    const { urls } = await uploadMultipleImages(req.body.images);
-    res.status(200).json({ success: true, urls });
-  } catch (error) {
-    console.error("Multiple images upload error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Multiple images upload failed",
-      error: error.message,
-    });
-  }
-};
-
 // Single video upload controller
 const uploadSingleVideo = async (req, res) => {
   try {
-    if (!req.body.video) {
+    if (!req.files || !req.files.file) {
       return res.status(400).json({
         success: false,
-        message: "No video provided",
+        message: "No video file provided",
       });
     }
-    const url = await uploadVideo(req.body.video);
+    const file = req.files.file;
+    const url = await uploadVideo(file);
     res.status(200).json({ success: true, url });
   } catch (error) {
     console.error("Video upload error:", error);
@@ -68,16 +44,43 @@ const uploadSingleVideo = async (req, res) => {
   }
 };
 
+// Multiple images upload controller
+const uploadMultipleImagesHandler = async (req, res) => {
+  try {
+    if (!req.files || !req.files.files) {
+      return res.status(400).json({
+        success: false,
+        message: "No image files provided",
+      });
+    }
+    const files = Array.isArray(req.files.files)
+      ? req.files.files
+      : [req.files.files];
+    const urls = await Promise.all(files.map((file) => uploadImage(file)));
+    res.status(200).json({ success: true, urls });
+  } catch (error) {
+    console.error("Multiple images upload error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Multiple images upload failed",
+      error: error.message,
+    });
+  }
+};
+
 // Multiple videos upload controller
 const uploadMultipleVideosHandler = async (req, res) => {
   try {
-    if (!req.body.videos || !Array.isArray(req.body.videos)) {
+    if (!req.files || !req.files.files) {
       return res.status(400).json({
         success: false,
-        message: "No videos provided or invalid format",
+        message: "No video files provided",
       });
     }
-    const { urls } = await uploadMultipleVideos(req.body.videos);
+    const files = Array.isArray(req.files.files)
+      ? req.files.files
+      : [req.files.files];
+    const urls = await Promise.all(files.map((file) => uploadVideo(file)));
     res.status(200).json({ success: true, urls });
   } catch (error) {
     console.error("Multiple videos upload error:", error);
@@ -91,7 +94,7 @@ const uploadMultipleVideosHandler = async (req, res) => {
 
 module.exports = {
   uploadSingleImage,
-  uploadMultipleImagesHandler,
   uploadSingleVideo,
+  uploadMultipleImagesHandler,
   uploadMultipleVideosHandler,
 };

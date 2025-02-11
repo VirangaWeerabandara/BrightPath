@@ -27,18 +27,17 @@ const opts = {
   resource_type: "auto",
 };
 
-const uploadImage = (image) => {
+const uploadImage = (file) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
-      image,
+      file.tempFilePath,
       {
         ...opts,
         resource_type: "image",
-        folder: "BrightPath_Images", // Specify folder for images
+        folder: "BrightPath_Images",
       },
       (error, result) => {
         if (result && result.secure_url) {
-          console.log(result.secure_url);
           return resolve(result.secure_url);
         }
         console.error("Image upload error:", error);
@@ -48,18 +47,17 @@ const uploadImage = (image) => {
   });
 };
 
-const uploadVideo = (video) => {
+const uploadVideo = (file) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
-      video,
+      file.tempFilePath,
       {
         ...opts,
         resource_type: "video",
-        folder: "BrightPath_Videos", // Specify folder for videos
+        folder: "BrightPath_Videos",
       },
       (error, result) => {
         if (result && result.secure_url) {
-          console.log(result.secure_url);
           return resolve(result.secure_url);
         }
         console.error("Video upload error:", error);
@@ -69,31 +67,4 @@ const uploadVideo = (video) => {
   });
 };
 
-// Exporting both uploadImage and uploadVideo
-module.exports = {
-  uploadImage,
-
-  uploadVideo,
-
-  uploadMultipleImages: async (images) => {
-    try {
-      const uploads = images.map((base) => uploadImage(base));
-      const values = await Promise.all(uploads);
-      return { urls: values }; // Return array of URLs in an object
-    } catch (err) {
-      console.error("Multiple image upload error:", err); // Log full error
-      throw err;
-    }
-  },
-
-  uploadMultipleVideos: async (videos) => {
-    try {
-      const uploads = videos.map((base) => uploadVideo(base));
-      const values = await Promise.all(uploads);
-      return { urls: values }; // Return array of URLs in an object
-    } catch (err) {
-      console.error("Multiple video upload error:", err); // Log full error
-      throw err;
-    }
-  },
-};
+module.exports = { uploadImage, uploadVideo };
