@@ -3,6 +3,8 @@ import { RefObject, useState, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {env} from '../config/env.config';
+import { useSignIn } from '../hooks/useSignIn';
 
 interface SignInModalProps {
   openModal: boolean;
@@ -15,86 +17,17 @@ interface FormData {
   password: string;
 }
 
-export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInModalProps) {
-  const navigate = useNavigate();
+export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInModalProps) {  
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: ""
   });
-  const [error, setError] = useState<string | null>(null);
+  const { handleSignIn, error, isLoading } = useSignIn(setOpenModal);
 
 // Update the handleSubmit function with proper data handling
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault();
-  setError(null);
-
-  try {
-    // Try teacher login first
-    const teacherResponse = await fetch('http://localhost:4000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ ...formData, role: 'teacher' })
-    });
-
-    const teacherData = await teacherResponse.json();
-
-    if (teacherResponse.ok) {
-      // Store token and teacher data directly from response
-      localStorage.setItem('token', teacherData.token);
-      localStorage.setItem('user', JSON.stringify({
-        _id: teacherData._id,
-        email: teacherData.email,
-        firstName: teacherData.firstName,
-        lastName: teacherData.lastName,
-        nic: teacherData.nic,
-        role: 'teacher'
-      }));
-      
-      setOpenModal(false);
-      toast.success('Welcome back, teacher!');
-      navigate('/dashboard');
-      return;
-    }
-
-    // If teacher login fails, try student login
-    const studentResponse = await fetch('http://localhost:4000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ ...formData, role: 'student' })
-    });
-
-    const studentData = await studentResponse.json();
-
-    if (studentResponse.ok) {
-      // Store token and student data directly from response
-      localStorage.setItem('token', studentData.token);
-      localStorage.setItem('user', JSON.stringify({
-        _id: studentData._id,
-        email: studentData.email,
-        firstName: studentData.firstName,
-        lastName: studentData.lastName,
-        role: 'student'
-      }));
-      
-      setOpenModal(false);
-      toast.success('Welcome back, student!');
-      navigate('/course');
-      return;
-    }
-
-    // If both logins fail
-    setError(studentData.message || 'Invalid email or password');
-    toast.error('Login failed. Please check your credentials.');
-
-  } catch (err) {
-    console.error('Login error:', err);
-    setError('An error occurred during login');
-    toast.error('An error occurred during login');
-  }
+  await handleSignIn(formData);
 };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -150,9 +83,10 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               {error}
             </div>
           )}
-
           <div className="flex w-full justify-center">
-            <Button type="submit">Sign In</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </Button>
           </div>
         </form>
       </Modal.Body>

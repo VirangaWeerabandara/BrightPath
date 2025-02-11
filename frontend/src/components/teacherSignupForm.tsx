@@ -3,6 +3,7 @@ import { RefObject, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { env } from '../config/env.config';
 
 interface SignInModalProps {
   openModal: boolean;
@@ -40,7 +41,7 @@ export function TeacherSignUpForm({
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/api/signup/teacher', {
+      const response = await fetch(`${env.apiUrl}/signup/teacher`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
