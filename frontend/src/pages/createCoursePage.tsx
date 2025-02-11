@@ -28,6 +28,8 @@ interface VideoItem {
   videoUploadProgress: number;
   thumbnailUploadProgress: number;
   name: string;
+  videoPublicId?: string;  
+  thumbnailPublicId?: string;  
 }
 
 export default function CreateCoursePage() {
@@ -82,6 +84,8 @@ export default function CreateCoursePage() {
     videoId: string, 
     type: 'video' | 'thumbnail'
   ) => {
+    
+
     const file = event.target.files?.[0];
     if (!file) return;
   
@@ -131,6 +135,7 @@ export default function CreateCoursePage() {
             ? { 
                 ...v, 
                 [`${type}Url`]: response.data.url,
+                [`${type}PublicId`]: response.data.public_id,
                 [`${type}UploadProgress`]: 100
               } 
             : v
@@ -148,6 +153,65 @@ export default function CreateCoursePage() {
             } 
           : v
       ));
+    }
+
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const video = videos.find(v => v.id === id);
+      if (!video) return;
+  
+      const { token } = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+  
+      const deleteFileFromCloudinary = async (publicId: string) => {
+        if (!publicId) return true; // Skip if no publicId
+  
+        try {
+          const response = await axios.delete(
+            `${env.apiUrl}/upload/file/${encodeURIComponent(publicId)}`,
+            {
+              headers: { 'Authorization': `Bearer ${token}` }
+            }
+          );
+          
+          if (response.data.success) {
+            return true;
+          }
+          throw new Error(response.data.message || 'Delete failed');
+        } catch (error) {
+          console.error('Error deleting file:', error);
+          return false;
+        }
+      };
+  
+      // Delete files in parallel
+      const [videoDeleted, thumbnailDeleted] = await Promise.all([
+        video.videoPublicId ? deleteFileFromCloudinary(video.videoPublicId) : Promise.resolve(true),
+        video.thumbnailPublicId ? deleteFileFromCloudinary(video.thumbnailPublicId) : Promise.resolve(true)
+      ]);
+  
+      // Show appropriate messages
+      if (!videoDeleted) {
+        toast.error('Failed to delete video file');
+      }
+      if (!thumbnailDeleted) {
+        toast.error('Failed to delete thumbnail file');
+      }
+  
+      // Remove from local state if at least one deletion was successful
+      if (videoDeleted || thumbnailDeleted) {
+        setVideos(prevVideos => prevVideos.filter(v => v.id !== id));
+        toast.success('Video removed from list');
+      }
+  
+    } catch (error) {
+      console.error('Error deleting files:', error);
+      toast.error('Failed to delete files');
     }
   };
 
@@ -221,9 +285,7 @@ export default function CreateCoursePage() {
       setLoading(false);
     }
   };
-  const handleDelete = (id: string) => {
-    setVideos(videos.filter(video => video.id !== id));
-  };
+
 
   const addNewVideoRow = () => {
     setVideos(prev => [...prev, {

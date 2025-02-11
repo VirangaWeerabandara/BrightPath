@@ -6,6 +6,7 @@ const {
   uploadMultipleImagesHandler,
   uploadSingleVideo,
   uploadMultipleVideosHandler,
+  deleteFile,
 } = require("../controllers/uploadController");
 
 const router = express.Router();
@@ -21,5 +22,7 @@ router.post("/images", uploadMultipleImagesHandler);
 // Video upload routes
 router.post("/video", uploadSingleVideo);
 router.post("/videos", uploadMultipleVideosHandler);
+
+router.delete("/file/:publicId", deleteFile);
 
 module.exports = router;

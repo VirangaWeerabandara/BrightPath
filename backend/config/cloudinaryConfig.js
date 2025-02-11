@@ -37,8 +37,8 @@ const uploadImage = (file) => {
         folder: "BrightPath_Images",
       },
       (error, result) => {
-        if (result && result.secure_url) {
-          return resolve(result.secure_url);
+        if (result) {
+          return resolve(result); // Return the full result
         }
         console.error("Image upload error:", error);
         return reject({ message: error.message });
@@ -57,8 +57,8 @@ const uploadVideo = (file) => {
         folder: "BrightPath_Videos",
       },
       (error, result) => {
-        if (result && result.secure_url) {
-          return resolve(result.secure_url);
+        if (result) {
+          return resolve(result); // Return the full result
         }
         console.error("Video upload error:", error);
         return reject({ message: error.message });
