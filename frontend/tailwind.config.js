@@ -5,6 +5,9 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", flowbite.content()],
   theme: {
     extend: {
+      maxWidth: {
+        "7.5xl": "84rem", // 1344px - halfway between 7xl and 8xl
+      },
       colors: {
         primary: {
           100: "#EDE9FE",
@@ -21,7 +24,7 @@ module.exports = {
           500: "#6B7280",
           700: "#374151",
           900: "#111827",
-        }
+        },
       },
     },
   },

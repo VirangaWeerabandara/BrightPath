@@ -29,7 +29,7 @@ const COURSE_CATEGORIES = [
     "dasds",
   ];
 
-const CoursePage = () => {  
+const MyLearningPage = () => {  
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");   
@@ -349,4 +349,4 @@ const CoursePage = () => {
 </>
     )
 }
-export default CoursePage;
+export default MyLearningPage;

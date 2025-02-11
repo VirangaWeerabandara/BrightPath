@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button,Navbar, Footer, } from "flowbite-react";
 import logo from '../assets/logo.png'; 
 import picture from '../assets/picture.png';
@@ -12,7 +12,7 @@ import background from '../assets/background.png';
 import { SignInForm } from '../components/signInForm';
 import { useNavigate } from 'react-router-dom';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
-
+import { FaUserCircle } from 'react-icons/fa';
 
 interface FeatureCardProps {
   icon: string;
@@ -37,7 +37,26 @@ function LandingPage() {
     const navigate = useNavigate()
     const [openModal, setOpenModal] = useState(false);
     const emailInputRef = useRef<HTMLInputElement>(null);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    const handleSignInSuccess = (userData: any) => {
+      setUser(userData);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            setIsDropdownOpen(false);
+        }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+}, []);
     const [formData, setFormData] = useState({
           name: '',
           email: '',
@@ -55,7 +74,7 @@ function LandingPage() {
           // Reset form after submission
           setFormData({ name: '', email: '', message: '' });
         };
-
+    
     const features = [
         { icon: courseIcon, title: "Wide Range of Courses", description: "We offer a diverse selection of courses across multiple disciplines, including technology, business, creative arts, and personal development. Whether you’re a beginner or an advanced learner, we have something for everyone." },
         { icon: instructorIcon, title: "Expert Instructors", description: "Our courses are taught by industry experts and educators with real-world experience. They bring in-depth knowledge and practical insights to help you learn the skills you need to succeed." },
@@ -73,18 +92,82 @@ function LandingPage() {
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">BrightPath</span>
       </Navbar.Brand>
       <div className="flex md:order-2">
-        <Button onClick={() => setOpenModal(true)} outline gradientDuoTone="purpleToBlue" className='w-24 text-lg font-bold'>Login</Button>
-        <SignInForm 
-        openModal={openModal} 
-        setOpenModal={setOpenModal} 
-        emailInputRef={emailInputRef} 
-      />
+        {user ? (
+            <div className="relative" ref={dropdownRef}>
+                <div 
+                    className="flex items-center space-x-2 cursor-pointer" 
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                    <FaUserCircle className="w-8 h-8 text-gray-700 " />
+                    <span className="text-gray-700 font-medium">{user.firstName}</span>
+                </div>
+                {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
+                <button
+                    onClick={() => {
+                        navigate('/my-learning');
+                        setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80 flex items-center space-x-2"
+                >
+                    <span>My Learning</span>
+                </button>
+                <button
+                    onClick={() => {
+                        navigate('/settings');
+                        setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80 flex items-center space-x-2"
+                >
+                    <span>Settings</span>
+                </button>
+                <hr className="my-1 border-gray-200" />
+                <button
+                    onClick={() => {
+                        // Add your logout logic here
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('token');
+                        setUser(null);
+                        navigate('/');
+                        setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100/80 flex items-center space-x-2"
+                >
+                    <span>Logout</span>
+                </button>
+            </div>
+        )}
+            </div>
+        ) : (
+            <>
+                <Button 
+                    onClick={() => setOpenModal(true)} 
+                    outline 
+                    gradientDuoTone="purpleToBlue" 
+                    className='w-24 text-lg font-bold'
+                >
+                    Login
+                </Button>
+                <SignInForm 
+                    openModal={openModal} 
+                    setOpenModal={setOpenModal} 
+                    emailInputRef={emailInputRef} 
+                    onSignInSuccess={handleSignInSuccess}
+                />
+            </>
+        )}
         <Navbar.Toggle />
-      </div>
+    </div>
       <Navbar.Collapse>
         <Navbar.Link href="#home" active className='text-lg font-bold text-neutral-900'>
           Home
         </Navbar.Link>
+        <Navbar.Link 
+    onClick={() => navigate('/courses')} 
+    className='text-lg font-bold text-neutral-900 cursor-pointer'
+  >
+    Courses
+  </Navbar.Link>
         <Navbar.Link href="#about"  className='text-lg font-bold text-neutral-900'>About</Navbar.Link>
         <Navbar.Link href="#contact" className='text-lg font-bold text-neutral-900'>Contact</Navbar.Link>
       </Navbar.Collapse>

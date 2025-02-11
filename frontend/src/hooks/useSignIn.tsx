@@ -8,12 +8,12 @@ interface SignInFormData {
   password: string;
 }
 
-export const useSignIn = (setOpenModal: (open: boolean) => void) => {
+export const useSignIn = (setOpenModal: (open: boolean) => void, onSignInSuccess?: (userData: any) => void) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = async (formData: SignInFormData) => {
+    const handleSignIn = async (formData: SignInFormData) => {
     setError(null);
     setIsLoading(true);
 
@@ -80,18 +80,26 @@ export const useSignIn = (setOpenModal: (open: boolean) => void) => {
     nic?: string;
   }) => {
     localStorage.setItem('token', userData.token);
-    localStorage.setItem('user', JSON.stringify({
+    const userToStore = {
       _id: userData._id,
       email: userData.email,
       firstName: userData.firstName,
       lastName: userData.lastName,
       ...(userData.role === 'teacher' && { nic: userData.nic }),
       role: userData.role
-    }));
+    };
+    
+    localStorage.setItem('user', JSON.stringify(userToStore));
     
     setOpenModal(false);
     toast.success(`Welcome back, ${userData.firstName}!`);
-    navigate(userData.role === 'teacher' ? '/dashboard' : '/course');
+    
+    // Call the callback function if provided
+    if (onSignInSuccess) {
+      onSignInSuccess(userToStore);
+    }
+    
+    navigate(userData.role === 'teacher' ? '/dashboard' : '/courses');
   };
 
   return {

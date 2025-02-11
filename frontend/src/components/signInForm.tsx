@@ -10,6 +10,7 @@ interface SignInModalProps {
   openModal: boolean;
   setOpenModal: (open: boolean) => void;
   emailInputRef: RefObject<HTMLInputElement>;
+  onSignInSuccess?: (userData: any) => void;
 }
 
 interface FormData {
@@ -17,13 +18,13 @@ interface FormData {
   password: string;
 }
 
-export function SignInForm({ openModal, setOpenModal, emailInputRef }: SignInModalProps) {  
+export function SignInForm({ openModal, setOpenModal, emailInputRef, onSignInSuccess }: SignInModalProps) {  
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: ""
   });
-  const { handleSignIn, error, isLoading } = useSignIn(setOpenModal);
-
+  const { handleSignIn, error, isLoading } = useSignIn(setOpenModal, onSignInSuccess);
+  
 // Update the handleSubmit function with proper data handling
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault();
