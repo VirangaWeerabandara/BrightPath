@@ -1,16 +1,31 @@
-import { useState, useEffect } from 'react';
-import { env } from '../config/env.config';
+import { useState, useEffect } from "react";
+import { env } from "../config/env.config";
 
-interface Course {
-  _id: string;
-  name: string;
-  category: string;
-  thumbnails: string[];
-  description: string;
+export interface Thumbnail {
+  url: string;
+  public_id: string;
 }
 
-export const useCourses = (selectedCategory: string = 'All') => {
-  const [courses, setCourses] = useState<Course[]>([]);
+export interface Course {
+  _id: string;
+  name: string;
+  description: string;
+  category: string;
+  thumbnails: Thumbnail[];
+  teacherId: {
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface CourseHookResult {
+  courses: Course[];
+  loading: boolean;
+  error: string | null;
+}
+
+export const useCourses = (category: string): CourseHookResult => {
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,32 +33,34 @@ export const useCourses = (selectedCategory: string = 'All') => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${env.apiUrl}/courses`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (!response.ok) throw new Error('Failed to fetch courses');
-        
+        setError(null);
+        const response = await fetch(`${env.apiUrl}/courses`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+
         const data = await response.json();
-        
-        // Filter courses based on selected category
-        const filteredCourses = selectedCategory === 'All' 
-          ? data.data
-          : data.data.filter((course: Course) => course.category === selectedCategory);
-        
-        setCourses(filteredCourses);
+
+        if (data.success) {
+          const filteredCourses =
+            category === "All"
+              ? data.data
+              : data.data.filter((course: any) => course.category === category);
+          setCourses(filteredCourses);
+        } else {
+          throw new Error(data.message || "Failed to fetch courses");
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setCourses([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCourses();
-  }, [selectedCategory]); // Add selectedCategory as dependency
+  }, [category]);
 
   return { courses, loading, error };
 };

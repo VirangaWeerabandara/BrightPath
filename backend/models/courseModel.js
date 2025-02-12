@@ -2,6 +2,33 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
+const videoSchema = new Schema({
+  url: {
+    type: String,
+    required: [true, "Video URL is required"],
+  },
+  title: {
+    type: String,
+    required: [true, "Video title is required"],
+    trim: true,
+  },
+  public_id: {
+    type: String,
+    required: [true, "Cloudinary public ID is required"],
+  },
+});
+
+const thumbnailSchema = new Schema({
+  url: {
+    type: String,
+    required: [true, "Thumbnail URL is required"],
+  },
+  public_id: {
+    type: String,
+    required: [true, "Cloudinary public ID is required"],
+  },
+});
+
 const courseSchema = new Schema({
   name: {
     type: String,
@@ -13,18 +40,8 @@ const courseSchema = new Schema({
     required: [true, "Course description is required"],
     trim: true,
   },
-  videos: [
-    {
-      type: String,
-      required: [true, "At least one video URL is required"],
-    },
-  ],
-  thumbnails: [
-    {
-      type: String,
-      required: [true, "At least one thumbnail URL is required"],
-    },
-  ],
+  videos: [videoSchema],
+  thumbnails: [thumbnailSchema],
   teacherId: {
     type: Schema.Types.ObjectId,
     ref: "Teacher",
