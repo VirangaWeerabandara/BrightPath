@@ -43,11 +43,18 @@ export default function EditCoursePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Adjust this number as needed
   const [courseData, setCourseData] = useState({
     name: "",
     description: "",
     category: "",
   });
+
+  const indexOfLastVideo = currentPage * itemsPerPage;
+  const indexOfFirstVideo = indexOfLastVideo - itemsPerPage;
+  const currentVideos = videos.slice(indexOfFirstVideo, indexOfLastVideo);
+  const totalPages = Math.ceil(videos.length / itemsPerPage);
 
   const getAuthToken = () => {
     const token = localStorage.getItem("token");
@@ -458,134 +465,220 @@ export default function EditCoursePage() {
               </Button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                      Video Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                      Video
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                      Thumbnail
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {videos.map((video) => (
-                    <tr key={video.id}>
-                      <td className="px-6 py-4">
-                        <input
-                          type="text"
-                          value={video.name}
-                          onChange={(e) => {
-                            setVideos((prevVideos) =>
-                              prevVideos.map((v) =>
-                                v.id === video.id
-                                  ? { ...v, name: e.target.value }
-                                  : v,
-                              ),
-                            );
-                          }}
-                          className="w-full rounded border px-2 py-1"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-2">
-                          <input
-                            type="file"
-                            accept="video/*"
-                            onChange={(e) =>
-                              handleFileUpload(e, video.id, "video")
-                            }
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
-                            title={
-                              video.videoUrl ? "Replace video" : "Choose video"
-                            }
-                          />
-                          <div className="flex items-center space-x-2">
-                            <div className="h-1 flex-grow rounded bg-gray-200">
-                              {video.videoUploadProgress > 0 && (
-                                <div
-                                  className={`h-full rounded transition-all duration-300 ${
-                                    video.videoUrl
-                                      ? "bg-green-500"
-                                      : "bg-blue-500"
-                                  }`}
-                                  style={{
-                                    width: `${video.videoUploadProgress}%`,
-                                  }}
-                                />
-                              )}
-                            </div>
-                            <FaCheckCircle
-                              className={`text-lg transition-colors duration-300 ${
-                                video.videoUrl
-                                  ? "text-green-500"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) =>
-                              handleFileUpload(e, video.id, "thumbnail")
-                            }
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
-                            title={
-                              video.thumbnailUrl
-                                ? "Replace thumbnail"
-                                : "Choose thumbnail"
-                            }
-                          />
-                          <div className="flex items-center space-x-2">
-                            <div className="h-1 flex-grow rounded bg-gray-200">
-                              {video.thumbnailUploadProgress > 0 && (
-                                <div
-                                  className={`h-full rounded transition-all duration-300 ${
-                                    video.thumbnailUrl
-                                      ? "bg-green-500"
-                                      : "bg-blue-500"
-                                  }`}
-                                  style={{
-                                    width: `${video.thumbnailUploadProgress}%`,
-                                  }}
-                                />
-                              )}
-                            </div>
-                            <FaCheckCircle
-                              className={`text-lg transition-colors duration-300 ${
-                                video.thumbnailUrl
-                                  ? "text-green-500"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(video.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
+            <div className="rounded-lg border border-gray-200 shadow">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Video Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Video
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Thumbnail
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {currentVideos.map((video) => (
+                      <tr key={video.id}>
+                        <td className="px-6 py-4">
+                          <input
+                            type="text"
+                            value={video.name}
+                            onChange={(e) => {
+                              setVideos((prevVideos) =>
+                                prevVideos.map((v) =>
+                                  v.id === video.id
+                                    ? { ...v, name: e.target.value }
+                                    : v,
+                                ),
+                              );
+                            }}
+                            className="w-full rounded border px-2 py-1"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-2">
+                            <input
+                              type="file"
+                              accept="video/*"
+                              onChange={(e) =>
+                                handleFileUpload(e, video.id, "video")
+                              }
+                              className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                              title={
+                                video.videoUrl
+                                  ? "Replace video"
+                                  : "Choose video"
+                              }
+                            />
+                            <div className="flex items-center space-x-2">
+                              <div className="h-1 flex-grow rounded bg-gray-200">
+                                {video.videoUploadProgress > 0 && (
+                                  <div
+                                    className={`h-full rounded transition-all duration-300 ${
+                                      video.videoUrl
+                                        ? "bg-green-500"
+                                        : "bg-blue-500"
+                                    }`}
+                                    style={{
+                                      width: `${video.videoUploadProgress}%`,
+                                    }}
+                                  />
+                                )}
+                              </div>
+                              <FaCheckCircle
+                                className={`text-lg transition-colors duration-300 ${
+                                  video.videoUrl
+                                    ? "text-green-500"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) =>
+                                handleFileUpload(e, video.id, "thumbnail")
+                              }
+                              className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                              title={
+                                video.thumbnailUrl
+                                  ? "Replace thumbnail"
+                                  : "Choose thumbnail"
+                              }
+                            />
+                            <div className="flex items-center space-x-2">
+                              <div className="h-1 flex-grow rounded bg-gray-200">
+                                {video.thumbnailUploadProgress > 0 && (
+                                  <div
+                                    className={`h-full rounded transition-all duration-300 ${
+                                      video.thumbnailUrl
+                                        ? "bg-green-500"
+                                        : "bg-blue-500"
+                                    }`}
+                                    style={{
+                                      width: `${video.thumbnailUploadProgress}%`,
+                                    }}
+                                  />
+                                )}
+                              </div>
+                              <FaCheckCircle
+                                className={`text-lg transition-colors duration-300 ${
+                                  video.thumbnailUrl
+                                    ? "text-green-500"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(video.id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                <div className="flex flex-1 justify-between sm:hidden">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage((prev) => Math.max(prev - 1, 1));
+                    }}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Showing{" "}
+                      <span className="font-medium">
+                        {indexOfFirstVideo + 1}
+                      </span>{" "}
+                      -{" "}
+                      <span className="font-medium">
+                        {Math.min(indexOfLastVideo, videos.length)}
+                      </span>{" "}
+                      of <span className="font-medium">{videos.length}</span>{" "}
+                      videos
+                    </p>
+                  </div>
+                  <div>
+                    <nav
+                      className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                      aria-label="Pagination"
+                    >
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        disabled={currentPage === 1}
+                        className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      {[...Array(totalPages)].map((_, i) => (
+                        <button
+                          key={i + 1}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(i + 1);
+                          }}
+                          className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                            currentPage === i + 1
+                              ? "z-10 bg-purple-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+                              : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                          }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prev) =>
+                            Math.min(prev + 1, totalPages),
+                          )
+                        }
+                        disabled={currentPage === totalPages}
+                        className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </form>
