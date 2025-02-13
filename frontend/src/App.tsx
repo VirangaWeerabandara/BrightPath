@@ -13,6 +13,7 @@ import MyLearningPage from "./pages/myLearningPage";
 import { Toaster } from "react-hot-toast";
 import EditCoursePage from "./pages/editCoursePage";
 import { AnimatePresence } from "framer-motion";
+import CourseViewPage from "./pages/courseViewPage";
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["teacher"]}>
                   <CreateCourse />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/course/:courseId"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <CourseViewPage />
                 </ProtectedRoute>
               }
             />
