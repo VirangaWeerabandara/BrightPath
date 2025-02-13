@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { env } from '../config/env.config';
+import { useState, useEffect } from "react";
+import { env } from "../config/env.config";
 
 interface EnrolledCourse {
   _id: string;
@@ -17,27 +17,30 @@ export const useEnrolledCourses = () => {
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          throw new Error('No authentication token found');
+          throw new Error("No authentication token found");
         }
 
-        const response = await fetch(`${env.apiUrl}/student/enrolled-courses`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await fetch(
+          `${env.apiUrl}/student/courses/enrolled-courses`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch enrolled courses');
+          throw new Error(data.error || "Failed to fetch enrolled courses");
         }
 
         setCourses(data.courses || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
         setCourses([]);
       } finally {
         setLoading(false);

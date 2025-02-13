@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { DashboardLayout } from '../components/layout/TeacherDashboardLayout';
-import axios from 'axios';
-import { env } from '../config/env.config';
+import React, { useEffect, useState } from "react";
+import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
+import axios from "axios";
+import { env } from "../config/env.config";
 import {
   BarChart,
   Bar,
@@ -16,7 +16,7 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
-} from 'recharts';
+} from "recharts";
 
 interface CourseStats {
   totalCourses: number;
@@ -36,14 +36,14 @@ interface CategoryData {
   count: number;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 export default function DashboardPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [stats, setStats] = useState<CourseStats>({
     totalCourses: 0,
     totalStudents: 0,
-    averageStudentsPerCourse: 0
+    averageStudentsPerCourse: 0,
   });
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,35 +51,40 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
 
         const [coursesResponse, statsResponse] = await Promise.all([
-          axios.get(`${env.apiUrl}/teacher/courses/${user._id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+          axios.get(`${env.apiUrl}/courses/teacher/${user._id}`, {
+            headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${env.apiUrl}/teacher/${user._id}/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+          axios.get(`${env.apiUrl}/courses/teacher/${user._id}/stats`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
         setCourses(coursesResponse.data.data.courses);
         setStats(statsResponse.data.data);
 
         // Process category data
-        const categories = coursesResponse.data.data.courses.reduce((acc: { [key: string]: number }, course: Course) => {
-          acc[course.category] = (acc[course.category] || 0) + 1;
-          return acc;
-        }, {});
+        const categories = coursesResponse.data.data.courses.reduce(
+          (acc: { [key: string]: number }, course: Course) => {
+            acc[course.category] = (acc[course.category] || 0) + 1;
+            return acc;
+          },
+          {},
+        );
 
-        const categoryStats = Object.entries(categories).map(([category, count]) => ({
-          category,
-          count: count as number,
-        }));
+        const categoryStats = Object.entries(categories).map(
+          ([category, count]) => ({
+            category,
+            count: count as number,
+          }),
+        );
 
         setCategoryData(categoryStats);
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -91,8 +96,8 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="flex h-screen items-center justify-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
         </div>
       </DashboardLayout>
     );
@@ -102,22 +107,32 @@ export default function DashboardPage() {
     <DashboardLayout>
       {/* Stats Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-6">Teacher Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <h1 className="mb-6 text-3xl font-bold">Teacher Dashboard</h1>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Stats cards - existing code */}
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-primary-600">
-            <h3 className="text-lg font-semibold text-gray-600">Total Courses</h3>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalCourses}</p>
+          <div className="rounded-lg border-l-4 border-primary-600 bg-white p-6 shadow-md">
+            <h3 className="text-lg font-semibold text-gray-600">
+              Total Courses
+            </h3>
+            <p className="mt-2 text-3xl font-bold text-gray-800">
+              {stats.totalCourses}
+            </p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-            <h3 className="text-lg font-semibold text-gray-600">Total Students</h3>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalStudents}</p>
+          <div className="rounded-lg border-l-4 border-green-500 bg-white p-6 shadow-md">
+            <h3 className="text-lg font-semibold text-gray-600">
+              Total Students
+            </h3>
+            <p className="mt-2 text-3xl font-bold text-gray-800">
+              {stats.totalStudents}
+            </p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-            <h3 className="text-lg font-semibold text-gray-600">Avg. Students per Course</h3>
-            <p className="text-3xl font-bold text-gray-800 mt-2">
+          <div className="rounded-lg border-l-4 border-blue-500 bg-white p-6 shadow-md">
+            <h3 className="text-lg font-semibold text-gray-600">
+              Avg. Students per Course
+            </h3>
+            <p className="mt-2 text-3xl font-bold text-gray-800">
               {stats.averageStudentsPerCourse.toFixed(1)}
             </p>
           </div>
@@ -125,10 +140,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Course Categories Distribution */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Course Categories Distribution</h2>
+        <div className="rounded-lg bg-white p-6 shadow-md">
+          <h2 className="mb-4 text-xl font-semibold">
+            Course Categories Distribution
+          </h2>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -142,7 +159,10 @@ export default function DashboardPage() {
                   label
                 >
                   {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -153,8 +173,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Course Overview Bar Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Course Overview</h2>
+        <div className="rounded-lg bg-white p-6 shadow-md">
+          <h2 className="mb-4 text-xl font-semibold">Course Overview</h2>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryData}>

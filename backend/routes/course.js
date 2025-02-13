@@ -14,18 +14,16 @@ const {
 
 const router = express.Router();
 
+router.get("/", getAllCourses);
+router.get("/:id", getCourseById);
 // Apply authentication middleware to all routes
 router.use(requireAuth);
 
 // Teacher-only routes
-router.post("/courses/create", requireTeacherRole, createCourse);
-router.get(
-  "/teacher/courses/:teacherId",
-  requireTeacherRole,
-  getCoursesByTeacher
-);
-router.put("/courses/:id", requireTeacherRole, updateCourse);
-router.delete("/courses/:id", requireTeacherRole, deleteCourse);
+router.post("/create", requireTeacherRole, createCourse);
+router.get("/teacher/:teacherId", requireTeacherRole, getCoursesByTeacher);
+router.put("/:id", requireTeacherRole, updateCourse);
+router.delete("/:id", requireTeacherRole, deleteCourse);
 router.get(
   "/teacher/:teacherId/stats",
   requireTeacherRole,
@@ -33,8 +31,6 @@ router.get(
 );
 
 // Student accessible routes
-router.get("/courses", getAllCourses);
-router.get("/courses/:id", getCourseById);
-router.post("/courses/:id/enroll", enrollStudent);
+router.post("/:id/enroll", enrollStudent);
 
 module.exports = router;

@@ -48,13 +48,13 @@ const studentRoutes = require("./routes/student");
 const teacherRoutes = require("./routes/teacher");
 const authRoutes = require("./routes/auth");
 const courseRoutes = require("./routes/course");
-const uploadRoutes = require("./routes/upload"); // Add this line
+const uploadRoutes = require("./routes/upload");
 
 // API Routes
-app.use("/api", authRoutes);
-app.use("/api", studentRoutes);
-app.use("/api", teacherRoutes);
-app.use("/api", courseRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/teacher", teacherRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Error Handler
