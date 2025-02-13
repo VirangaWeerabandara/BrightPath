@@ -128,13 +128,17 @@ const deleteFile = async (req, res) => {
 
     console.log("Attempting to delete file with publicId:", publicId);
 
-    // Determine resource type based on folder name
-    const resourceType = publicId.includes("BrightPath_Videos")
+    // Remove version number if present
+    const cleanPublicId = publicId.replace(/v\d+\//, "");
+
+    // Determine resource type based on folder path
+    const resourceType = cleanPublicId.includes("BrightPath_Videos")
       ? "video"
       : "image";
 
-    const result = await cloudinary.uploader.destroy(publicId, {
+    const result = await cloudinary.uploader.destroy(cleanPublicId, {
       resource_type: resourceType,
+      invalidate: true,
     });
 
     console.log("Cloudinary delete result:", result);
@@ -145,7 +149,10 @@ const deleteFile = async (req, res) => {
         message: "File deleted successfully",
       });
     } else {
-      throw new Error("Failed to delete file from Cloudinary");
+      console.error("Cloudinary delete failed with result:", result);
+      throw new Error(
+        `Failed to delete file from Cloudinary: ${result.result}`
+      );
     }
   } catch (error) {
     console.error("File deletion error:", error);
@@ -153,6 +160,7 @@ const deleteFile = async (req, res) => {
       success: false,
       message: "File deletion failed",
       error: error.message,
+      details: error.response?.data || error.toString(),
     });
   }
 };

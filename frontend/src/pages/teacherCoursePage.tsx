@@ -4,6 +4,9 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { env } from "../config/env.config";
+import { FaTrash } from "react-icons/fa";
+import { Modal, Button } from "flowbite-react";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 interface PaginationProps {
   currentPage: number;
@@ -16,6 +19,7 @@ interface Course {
   name: string;
   description: string;
   category: string;
+  videos: string[];
   thumbnails: string[];
   createdAt: string;
 }
@@ -27,6 +31,8 @@ export default function TeacherCoursePage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const coursesPerPage = 5;
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
 
   useEffect(() => {
     fetchCourses();
@@ -119,6 +125,90 @@ export default function TeacherCoursePage() {
     );
   };
 
+  const extractPublicId = (url: string, type: "video" | "image") => {
+    try {
+      // Extract the last part of the URL before file extension
+      const regex = /\/(?:video|upload)\/(?:v\d+\/)?(.+?)\.[^.]+$/;
+      const match = url.match(regex);
+      if (!match || !match[1]) return null;
+
+      // Add the appropriate folder prefix
+      const folder =
+        type === "video" ? "BrightPath_Videos" : "BrightPath_Images";
+      return `${folder}/${match[1].split("/").pop()}`; // Get only the last part of the path
+    } catch (error) {
+      console.error("Error extracting public ID:", error);
+      return null;
+    }
+  };
+
+  const handleDeleteCourse = async (course: Course) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please login first");
+        navigate("/login");
+        return;
+      }
+
+      const deleteFileFromCloudinary = async (
+        url: string,
+        type: "video" | "image",
+      ) => {
+        const publicId = extractPublicId(url, type);
+        if (!publicId) return true;
+
+        try {
+          const encodedPublicId = encodeURIComponent(publicId);
+          console.log("Attempting to delete with publicId:", publicId);
+
+          const response = await axios.delete(
+            `${env.apiUrl}/upload/file/${encodedPublicId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+
+          return response.data.success;
+        } catch (error) {
+          console.error("Error deleting file:", error);
+          return false;
+        }
+      };
+
+      // Delete videos and thumbnails from Cloudinary
+      const deletePromises = [
+        ...course.videos.map((videoUrl) =>
+          deleteFileFromCloudinary(videoUrl, "video"),
+        ),
+        ...course.thumbnails.map((thumbnailUrl) =>
+          deleteFileFromCloudinary(thumbnailUrl, "image"),
+        ),
+      ];
+
+      await Promise.all(deletePromises);
+
+      // Delete course from database
+      const response = await axios.delete(
+        `${env.apiUrl}/courses/${course._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (response.data.success) {
+        toast.success("Course deleted successfully");
+        fetchCourses(); // Refresh the course list
+      }
+    } catch (error: any) {
+      console.error("Error deleting course:", error);
+      toast.error(error.response?.data?.message || "Failed to delete course");
+    } finally {
+      setShowDeleteModal(false);
+      setCourseToDelete(null);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="p-6">
@@ -205,15 +295,28 @@ export default function TeacherCoursePage() {
                     </div>
                     <div className="mt-2 flex items-center justify-between">
                       <button
-                        onClick={() => navigate(`/course/${course._id}`)}
+                        onClick={() => navigate(`/course/edit/${course._id}`)}
                         className="hover:bg-primary-700 rounded-lg bg-primary-600 px-4 py-1.5 text-sm font-medium text-white transition-colors"
                       >
-                        View Details →
+                        Edit Course →
                       </button>
-                      <span className="text-xs text-gray-500">
-                        Created:{" "}
-                        {new Date(course.createdAt).toLocaleDateString()}
-                      </span>
+                      <div className="flex flex-col items-end justify-center gap-1">
+                        {" "}
+                        {/* Added justify-center */}
+                        <button
+                          onClick={() => {
+                            setCourseToDelete(course);
+                            setShowDeleteModal(true);
+                          }}
+                          className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                        >
+                          <FaTrash className="h-4 w-4" />
+                        </button>
+                        <span className="text-xs text-gray-500">
+                          Created:{" "}
+                          {new Date(course.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -245,6 +348,49 @@ export default function TeacherCoursePage() {
           </div>
         )}
       </div>
+
+      {showDeleteModal && courseToDelete && (
+        <Modal
+          show={showDeleteModal}
+          size="md"
+          popup
+          onClose={() => {
+            setShowDeleteModal(false);
+            setCourseToDelete(null);
+          }}
+        >
+          <Modal.Header />
+          <Modal.Body>
+            <div className="text-center">
+              <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+              <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                Are you sure you want to delete this course?
+                <br />
+                <span className="font-medium text-gray-800">
+                  {courseToDelete.name}
+                </span>
+              </h3>
+              <div className="flex justify-center gap-4">
+                <Button
+                  color="failure"
+                  onClick={() => handleDeleteCourse(courseToDelete)}
+                >
+                  Yes, delete it
+                </Button>
+                <Button
+                  color="gray"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setCourseToDelete(null);
+                  }}
+                >
+                  No, cancel
+                </Button>
+              </div>
+            </div>
+          </Modal.Body>
+        </Modal>
+      )}
     </DashboardLayout>
   );
 }

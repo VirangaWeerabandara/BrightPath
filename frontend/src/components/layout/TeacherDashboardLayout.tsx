@@ -1,5 +1,6 @@
-import React from 'react';
-import { Sidebar } from '../Sidebar';
+import React from "react";
+import { Sidebar } from "../Sidebar";
+import { PageTransition } from "../pageTransition";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -7,10 +8,10 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="ml-64 w-full p-8">
-        {children}
+      <main className="ml-20 flex-1 p-8 transition-all duration-300 lg:ml-64">
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );
