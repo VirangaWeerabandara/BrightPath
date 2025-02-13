@@ -10,10 +10,10 @@ const {
 const router = express.Router();
 
 // Public routes
-router.post("/signup/student", signupStudent);
+router.post("/signup", signupStudent);
 
 router.use(requireAuth); // Middleware to protect routes below
 router.post("/courses/:courseId/enroll", enrollInCourse);
-router.get("/student/enrolled-courses", getEnrolledCourses);
-router.put("/student/update-profile", updateProfile);
+router.get("/courses/enrolled-courses", getEnrolledCourses);
+router.put("/update-profile", updateProfile);
 module.exports = router;
