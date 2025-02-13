@@ -174,37 +174,23 @@ const updateCourse = async (req, res) => {
       });
     }
 
-    // If teacher is being changed, handle the course reference updates
-    if (updates.teacherId) {
-      const oldCourse = await Course.findById(id);
-      if (!oldCourse) {
-        return res.status(404).json({
-          success: false,
-          message: "Course not found",
-        });
-      }
+    // Validate the updates
+    if (!updates.name || !updates.description || !updates.category) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
 
-      // Remove course from old teacher
-      await Teacher.findByIdAndUpdate(
-        oldCourse.teacherId,
-        { $pull: { courses: id } },
-        { session }
-      );
-
-      // Add course to new teacher
-      const newTeacher = await Teacher.findById(updates.teacherId);
-      if (!newTeacher) {
-        return res.status(404).json({
-          success: false,
-          message: "New teacher not found",
-        });
-      }
-
-      await Teacher.findByIdAndUpdate(
-        updates.teacherId,
-        { $push: { courses: id } },
-        { session }
-      );
+    // Check if arrays have matching lengths
+    if (
+      updates.videos?.length !== updates.thumbnails?.length ||
+      updates.videos?.length !== updates.titles?.length
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Videos, thumbnails, and titles must have matching lengths",
+      });
     }
 
     const course = await Course.findByIdAndUpdate(

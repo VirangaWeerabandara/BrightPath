@@ -4,12 +4,19 @@ import background from "../assets/background2.png";
 import logo from "../assets/logo.png";
 import ProductCard from "../components/productCard";
 import { FaChevronLeft, FaChevronRight, FaUserCircle } from "react-icons/fa";
-import { Button } from "flowbite-react";
+import { Button, Footer } from "flowbite-react";
 import { useEffect, useRef } from "react";
 import { SignInForm } from "../components/signInForm";
 import { useCourses } from "../hooks/useCourses";
 import CourseDetailsCard from "../components/courseDetailsCard";
 import SettingsCard from "../components/SettingsCard";
+import {
+  BsFacebook,
+  BsInstagram,
+  BsTwitter,
+  BsGithub,
+  BsDribbble,
+} from "react-icons/bs";
 
 const COURSE_CATEGORIES = [
   "All",
@@ -104,7 +111,7 @@ const CoursePage = () => {
   return (
     <>
       <section
-        className="h-[2048px] bg-white bg-cover   sm:h-[512px]  md:h-[1024px] lg:h-[2048px] "
+        className="flex h-[2048px] flex-col bg-white bg-cover   sm:h-[512px]  md:h-[1024px] lg:h-[2048px] "
         style={{ backgroundImage: `url(${background})` }}
       >
         <div className="sticky top-0 z-50 border-b border-transparent bg-transparent backdrop-blur-lg">
@@ -313,6 +320,54 @@ const CoursePage = () => {
             onUpdateSuccess={handleProfileUpdate}
           />
         )}
+        <Footer container className="mt-auto bg-primary-100">
+          <div className="w-full">
+            <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
+              <div>
+                <Footer.Brand
+                  href="https://flowbite.com"
+                  src={logo}
+                  alt="BrightPath Logo"
+                  name="BrightPath"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
+                <div>
+                  <Footer.Title title="about" />
+                  <Footer.LinkGroup col>
+                    <Footer.Link href="#">Flowbite</Footer.Link>
+                    <Footer.Link href="#">Tailwind CSS</Footer.Link>
+                  </Footer.LinkGroup>
+                </div>
+                <div>
+                  <Footer.Title title="Follow us" />
+                  <Footer.LinkGroup col>
+                    <Footer.Link href="#">Github</Footer.Link>
+                    <Footer.Link href="#">Discord</Footer.Link>
+                  </Footer.LinkGroup>
+                </div>
+                <div>
+                  <Footer.Title title="Legal" />
+                  <Footer.LinkGroup col>
+                    <Footer.Link href="#">Privacy Policy</Footer.Link>
+                    <Footer.Link href="#">Terms &amp; Conditions</Footer.Link>
+                  </Footer.LinkGroup>
+                </div>
+              </div>
+            </div>
+            <Footer.Divider />
+            <div className="w-full sm:flex sm:items-center sm:justify-between">
+              <Footer.Copyright href="#" by="BrightPath™" year={2024} />
+              <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
+                <Footer.Icon href="#" icon={BsFacebook} />
+                <Footer.Icon href="#" icon={BsInstagram} />
+                <Footer.Icon href="#" icon={BsTwitter} />
+                <Footer.Icon href="#" icon={BsGithub} />
+                <Footer.Icon href="#" icon={BsDribbble} />
+              </div>
+            </div>
+          </div>
+        </Footer>
       </section>
     </>
   );
