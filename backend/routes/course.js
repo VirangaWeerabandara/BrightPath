@@ -10,10 +10,12 @@ const {
   getCoursesByTeacher,
   enrollStudent,
   getTeacherCourseStats,
+  getCourseContent,
 } = require("../controllers/courseController");
 
 const router = express.Router();
 
+router.get("/courses", getAllCourses);
 // Apply authentication middleware to all routes
 router.use(requireAuth);
 
@@ -33,8 +35,8 @@ router.get(
 );
 
 // Student accessible routes
-router.get("/courses", getAllCourses);
+
 router.get("/courses/:id", getCourseById);
 router.post("/courses/:id/enroll", enrollStudent);
-
+router.get("/courses/:courseId/content", requireAuth, getCourseContent);
 module.exports = router;

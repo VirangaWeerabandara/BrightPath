@@ -1,43 +1,38 @@
-import React from 'react';
-import defaultThumbnail from '../assets/default-course-thumbnail.png'; // Add a default thumbnail image
+import React from "react";
+import defaultThumbnail from "../assets/default-course-thumbnail.png"; // Add a default thumbnail image
 
 interface ProductCardProps {
-  imageUrl?: string;
+  imageUrl: string;
   courseName: string;
   category: string;
-  description: string;
   _id: string;
+  description: string;
   onClick: () => void;
 }
 
-
-const ProductCard: React.FC<ProductCardProps> = ({ imageUrl, courseName, category, onClick }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  imageUrl,
+  courseName,
+  category,
+  _id,
+  description,
+  onClick,
+}) => {
   return (
-    <div className="group relative cursor-pointer" onClick={onClick}>
-      <div className="aspect-square overflow-hidden">
+    <div
+      onClick={onClick}
+      className="group cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-all hover:shadow-lg"
+    >
+      <div className="aspect-w-16 aspect-h-9 relative overflow-hidden">
         <img
-          className="size-full object-cover transition-all duration-300 group-hover:scale-125"
-          src={imageUrl || defaultThumbnail}
+          src={imageUrl || "/default-course-thumbnail.png"} // Add a default thumbnail
           alt={courseName}
-          onError={(e) => {
-            e.currentTarget.src = defaultThumbnail;
-          }}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
         />
       </div>
-      <div className="absolute left-3 top-3">
-        <p className="rounded-full bg-white px-1.5 py-1 text-[8px] font-bold uppercase tracking-wide text-gray-900 sm:px-3 sm:py-1.5 sm:text-xs">
-          {category}
-        </p>
-      </div>
-      <div className="mt-4 flex items-start justify-between space-x-4">
-        <div>
-          <h3 className="text-xs font-bold text-gray-900 sm:text-sm md:text-base">
-            <button type="button" className="text-left text-xs font-bold text-gray-900 sm:text-sm md:text-base" title={courseName}>
-              {courseName}
-              <span className="absolute inset-0" aria-hidden="true"></span>
-            </button>
-          </h3>
-        </div>
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-gray-900">{courseName}</h3>
+        <p className="mt-1 text-sm text-gray-500">{category}</p>
       </div>
     </div>
   );

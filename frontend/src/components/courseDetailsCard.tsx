@@ -11,7 +11,7 @@ interface CourseDetailsModalProps {
     name: string;
     description: string;
     category: string;
-    thumbnails: string[];
+    thumbnails: Thumbnail[];
   };
   isLoggedIn: boolean;
 }
@@ -22,8 +22,15 @@ const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
   course,
   isLoggedIn,
 }) => {
+const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
+  show,
+  onClose,
+  course,
+  isLoggedIn,
+}) => {
   const handleEnroll = async () => {
     if (!isLoggedIn) {
+      toast.error("Please login to enroll in courses");
       toast.error("Please login to enroll in courses");
       return;
     }
@@ -40,16 +47,32 @@ const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
           },
         },
       );
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${env.apiUrl}/courses/${course._id}/enroll`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to enroll in course");
+        throw new Error(data.error || "Failed to enroll in course");
       }
 
       toast.success("Successfully enrolled in course!");
+      toast.success("Successfully enrolled in course!");
       onClose();
     } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to enroll in course",
+      );
       toast.error(
         error instanceof Error ? error.message : "Failed to enroll in course",
       );
@@ -65,13 +88,15 @@ const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
         <div className="space-y-6">
           <div className="aspect-video w-full overflow-hidden rounded-lg">
             <img
-              src={course.thumbnails[0]}
+              src={course.thumbnails[0].url}
               alt={course.name}
+              className="h-full w-full object-cover"
               className="h-full w-full object-cover"
             />
           </div>
           <div className="space-y-4">
             <div>
+              <span className="bg-primary-50 inline-block rounded-full px-3 py-1 text-sm font-semibold text-primary-600">
               <span className="bg-primary-50 inline-block rounded-full px-3 py-1 text-sm font-semibold text-primary-600">
                 {course.category}
               </span>
@@ -81,6 +106,7 @@ const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
         </div>
       </Modal.Body>
       <Modal.Footer>
+        <div className="flex w-full justify-end gap-4">
         <div className="flex w-full justify-end gap-4">
           <Button color="gray" onClick={onClose}>
             Close
@@ -95,3 +121,4 @@ const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
 };
 
 export default CourseDetailsCard;
+
