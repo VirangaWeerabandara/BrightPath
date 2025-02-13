@@ -19,6 +19,12 @@ const courseSchema = new Schema({
       required: [true, "At least one video URL is required"],
     },
   ],
+  titles: [
+    {
+      type: String,
+      required: [true, "At least one title is required"],
+    },
+  ],
   thumbnails: [
     {
       type: String,

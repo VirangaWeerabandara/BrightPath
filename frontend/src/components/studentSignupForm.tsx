@@ -1,6 +1,5 @@
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { RefObject, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
 import { env } from "../config/env.config";
@@ -25,7 +24,6 @@ export function StudentSignUpForm({
   emailInputRef,
   setOpenLoginModal,
 }: SignInModalProps) {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",

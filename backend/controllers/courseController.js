@@ -19,8 +19,15 @@ const createCourse = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { name, description, videos, thumbnails, teacherId, category } =
-      req.body;
+    const {
+      name,
+      description,
+      videos,
+      thumbnails,
+      titles,
+      teacherId,
+      category,
+    } = req.body;
 
     // Validate required fields
     if (
@@ -28,6 +35,7 @@ const createCourse = async (req, res) => {
       !description ||
       !videos ||
       !thumbnails ||
+      !titles ||
       !teacherId ||
       !category
     ) {
@@ -39,9 +47,22 @@ const createCourse = async (req, res) => {
           description: !description,
           videos: !videos,
           thumbnails: !thumbnails,
+          titles: !titles,
           teacherId: !teacherId,
           category: !category,
         },
+      });
+    }
+
+    // Validate arrays have matching lengths
+    if (
+      videos.length !== thumbnails.length ||
+      videos.length !== titles.length
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Videos, thumbnails, and titles must have the same number of items",
       });
     }
 
@@ -59,6 +80,7 @@ const createCourse = async (req, res) => {
       description,
       videos,
       thumbnails,
+      titles,
       teacherId,
       category,
       enrolledStudents: [],
@@ -87,7 +109,6 @@ const createCourse = async (req, res) => {
     session.endSession();
   }
 };
-
 // Get All Courses
 const getAllCourses = async (req, res) => {
   try {
