@@ -9,7 +9,7 @@ interface SignInModalProps {
   openModal: boolean;
   setOpenModal: (open: boolean) => void;
   emailInputRef: RefObject<HTMLInputElement>;
-  setOpenLoginModal: (open: boolean) => void; // Add this prop
+  setOpenLoginModal: (open: boolean) => void;
 }
 
 interface FormData {
