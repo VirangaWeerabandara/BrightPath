@@ -201,7 +201,7 @@ export default function CourseViewPage() {
 
           {/* Sidebar */}
           <div className="height-full w-80 border-l border-white/20 bg-white/20 backdrop-blur-md">
-            <div className="p-4">
+            <div className="p-5">
               <h3 className="mb-4 font-semibold text-gray-900">
                 Course Content
               </h3>
