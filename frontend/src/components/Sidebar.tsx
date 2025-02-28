@@ -7,7 +7,6 @@ import {
   FaTachometerAlt,
   FaBookOpen,
   FaPlus,
-  FaUser,
   FaSignOutAlt,
 } from "react-icons/fa";
 
@@ -29,17 +28,17 @@ export const Sidebar = () => {
     {
       path: "/dashboard",
       name: "Dashboard",
-      icon: <FaTachometerAlt className="h-5 w-5 text-current" />,
+      icon: <FaTachometerAlt className="size-5 text-current" />,
     },
     {
       path: "/create-course",
       name: "Create Course",
-      icon: <FaPlus className="h-5 w-5 text-current" />,
+      icon: <FaPlus className="size-5 text-current" />,
     },
     {
       path: "/my-courses",
       name: "My Courses",
-      icon: <FaBookOpen className="h-5 w-5 text-current" />,
+      icon: <FaBookOpen className="size-5 text-current" />,
     },
   ];
 
@@ -55,17 +54,20 @@ export const Sidebar = () => {
         className="absolute -right-3 top-8 rounded-full border bg-white p-1.5 shadow-md transition-all duration-200 hover:shadow-lg"
       >
         {isCollapsed ? (
-          <FaChevronRight className="h-4 w-4 text-gray-600" />
+          <FaChevronRight className="size-4 text-gray-600" />
         ) : (
-          <FaChevronLeft className="h-4 w-4 text-gray-600" />
+          <FaChevronLeft className="size-4 text-gray-600" />
         )}
       </button>
 
       {/* Logo and App Name */}
       <div
-        className={`flex items-center border-b p-4 ${isCollapsed ? "justify-center" : ""}`}
+        onClick={() => navigate("/")}
+        className={`flex cursor-pointer items-center border-b p-4 ${
+          isCollapsed ? "justify-center" : ""
+        }`}
       >
-        <img src={logo} alt="BrightPath Logo" className="h-8 w-8" />
+        <img src={logo} alt="BrightPath Logo" className="size-8" />
         {!isCollapsed && (
           <span className="ml-2 text-xl font-bold text-gray-900">
             BrightPath
@@ -102,7 +104,7 @@ export const Sidebar = () => {
           }`}
         >
           <img
-            className="h-8 w-8 rounded-full"
+            className="size-8 rounded-full"
             src={`https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}`}
             alt="Profile"
           />
@@ -122,7 +124,7 @@ export const Sidebar = () => {
             isCollapsed ? "justify-center" : ""
           }`}
         >
-          <FaSignOutAlt className="h-5 w-5" />
+          <FaSignOutAlt className="size-5" />
           {!isCollapsed && <span className="ml-3 font-medium">Logout</span>}
         </button>
       </div>

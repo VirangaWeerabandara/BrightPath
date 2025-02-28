@@ -43,7 +43,7 @@ export default function CourseViewPage() {
   const [error, setError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [user, setUser] = useState<User | null>(
+  const [user] = useState<User | null>(
     JSON.parse(localStorage.getItem("user") || "null"),
   );
 
@@ -95,7 +95,7 @@ export default function CourseViewPage() {
     >
       {/* Navigation Bar */}
       <div className="sticky top-0 z-50 border-b border-white/10 bg-white/10 backdrop-blur-lg">
-        <div className="max-w-8xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Left Section */}
             <div className="flex items-center space-x-6">
@@ -103,7 +103,7 @@ export default function CourseViewPage() {
                 className="flex cursor-pointer items-center space-x-2"
                 onClick={() => navigate("/")}
               >
-                <img src={logo} alt="BrightPath Logo" className="h-8 w-8" />
+                <img src={logo} alt="BrightPath Logo" className="size-8" />
                 <span className="text-xl font-bold text-gray-900">
                   BrightPath
                 </span>
@@ -121,7 +121,7 @@ export default function CourseViewPage() {
                   className="flex cursor-pointer items-center space-x-2"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  <FaUserCircle className="h-8 w-8 text-gray-700" />
+                  <FaUserCircle className="size-8 text-gray-700" />
                   <span className="text-sm font-medium text-gray-700">
                     {user.firstName}
                   </span>
@@ -172,7 +172,7 @@ export default function CourseViewPage() {
             <div className="aspect-video bg-black shadow-lg">
               <video
                 key={course.videos[currentVideoIndex]}
-                className="h-full w-full"
+                className="size-full"
                 controls
                 autoPlay
                 src={course.videos[currentVideoIndex]}
@@ -200,8 +200,8 @@ export default function CourseViewPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="height-full w-80 border-l border-white/20 bg-white/20 backdrop-blur-md">
-            <div className="p-5">
+          <div className="h-full w-80 border-l border-white/20 bg-white/20 backdrop-blur-md">
+            <div className="p-4">
               <h3 className="mb-4 font-semibold text-gray-900">
                 Course Content
               </h3>
@@ -220,7 +220,7 @@ export default function CourseViewPage() {
                       <img
                         src={course.thumbnails[index]}
                         alt={course.titles[index]}
-                        className="h-full w-full object-cover"
+                        className="size-full object-cover"
                       />
                     </div>
                     <p
