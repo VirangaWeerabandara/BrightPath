@@ -143,7 +143,10 @@ function LandingPage() {
           rounded
           className="fixed left-0 top-0 z-50 w-full bg-white bg-opacity-20 backdrop-blur-lg"
         >
-          <Navbar.Brand href="https://flowbite-react.com">
+          <Navbar.Brand
+            onClick={() => navigate("/")}
+            className="cursor-pointer"
+          >
             <img src={logo} className="mr-3 h-6 sm:h-9" alt="BrightPath Logo" />
             <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
               BrightPath
@@ -163,28 +166,55 @@ function LandingPage() {
                 </div>
                 {isDropdownOpen && (
                   <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg bg-white py-1 shadow-lg">
+                    {user.role === "teacher" ? (
+                      // Teacher dropdown options
+                      <>
+                        <button
+                          onClick={() => {
+                            navigate("/dashboard");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                        >
+                          <span>Dashboard</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            navigate("/create-course");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                        >
+                          <span>Create Course</span>
+                        </button>
+                        <hr className="my-1 border-gray-200" />
+                      </>
+                    ) : (
+                      // Student dropdown options
+                      <>
+                        <button
+                          onClick={() => {
+                            navigate("/my-learning");
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                        >
+                          <span>My Learning</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowSettings(true);
+                            setIsDropdownOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                        >
+                          Settings
+                        </button>
+                        <hr className="my-1 border-gray-200" />
+                      </>
+                    )}
                     <button
                       onClick={() => {
-                        navigate("/my-learning");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                    >
-                      <span>My Learning</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowSettings(true);
-                        setIsDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                    >
-                      Settings
-                    </button>
-                    <hr className="my-1 border-gray-200" />
-                    <button
-                      onClick={() => {
-                        // Add your logout logic here
                         localStorage.removeItem("user");
                         localStorage.removeItem("token");
                         setUser(null);

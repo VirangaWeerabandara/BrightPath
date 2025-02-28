@@ -63,7 +63,10 @@ export const Sidebar = () => {
 
       {/* Logo and App Name */}
       <div
-        className={`flex items-center border-b p-4 ${isCollapsed ? "justify-center" : ""}`}
+        onClick={() => navigate("/")}
+        className={`flex cursor-pointer items-center border-b p-4 ${
+          isCollapsed ? "justify-center" : ""
+        }`}
       >
         <img src={logo} alt="BrightPath Logo" className="h-8 w-8" />
         {!isCollapsed && (
