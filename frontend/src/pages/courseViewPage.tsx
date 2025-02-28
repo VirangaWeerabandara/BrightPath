@@ -90,7 +90,7 @@ export default function CourseViewPage() {
 
   return (
     <section
-      className="flex min-h-screen flex-col bg-white bg-cover"
+      className="flex min-h-screen flex-col bg-white bg-cover [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100/20 [&::-webkit-scrollbar]:w-2"
       style={{ backgroundImage: `url(${background})` }}
     >
       {/* Navigation Bar */}
@@ -166,8 +166,8 @@ export default function CourseViewPage() {
       {/* Main Content */}
       <div className="flex-1">
         <div className="flex h-full">
-          {/* Video and Info Section */}
-          <div className="flex-1">
+          {/* Video and Info Section - Add scrollbar styling */}
+          <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100/20 [&::-webkit-scrollbar]:w-2">
             {/* Video Player */}
             <div className="aspect-video bg-black shadow-lg">
               <video
@@ -205,7 +205,7 @@ export default function CourseViewPage() {
               <h3 className="mb-4 font-semibold text-gray-900">
                 Course Content
               </h3>
-              <div className="scrollbar-thin scrollbar-thumb-gray-400/20 scrollbar-track-transparent h-[calc(100vh-180px)] space-y-2 overflow-y-auto pr-2">
+              <div className="h-[calc(100vh-180px)] space-y-2 overflow-y-auto pr-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100/60 [&::-webkit-scrollbar]:w-2">
                 {course.videos.map((video, index) => (
                   <button
                     key={index}
