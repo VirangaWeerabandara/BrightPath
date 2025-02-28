@@ -141,7 +141,7 @@ function LandingPage() {
         <Navbar
           fluid
           rounded
-          className="fixed left-0 top-0 z-50 w-full bg-white bg-opacity-20 backdrop-blur-lg"
+          className="fixed left-0 top-0 z-50 w-full bg-white/20 backdrop-blur-lg"
         >
           <Navbar.Brand
             onClick={() => navigate("/")}
@@ -159,7 +159,7 @@ function LandingPage() {
                   className="flex cursor-pointer items-center space-x-2"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  <FaUserCircle className="h-8 w-8 text-gray-700 " />
+                  <FaUserCircle className="size-8 text-gray-700 " />
                   <span className="font-medium text-gray-700">
                     {user.firstName}
                   </span>
@@ -307,7 +307,7 @@ function LandingPage() {
               <img
                 src={picture}
                 alt="Woman with laptop"
-                className="mx-auto w-full max-w-[300px] transform transition-transform duration-300 hover:scale-105 sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px]"
+                className="mx-auto w-full max-w-[300px] transition-transform duration-300 hover:scale-105 sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px]"
                 style={{
                   filter: "drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.15))",
                 }}
