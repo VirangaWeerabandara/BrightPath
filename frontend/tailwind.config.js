@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       maxWidth: {
-        "7.5xl": "84rem", // 1344px - halfway between 7xl and 8xl
+        "7.5xl": "84rem",
       },
       colors: {
         primary: {
