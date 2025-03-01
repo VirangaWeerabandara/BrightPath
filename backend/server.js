@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware
 app.use(express.json({ limit: "25mb" }));
-app.use(express.urlencoded({ limit: "25mb" }));
+app.use(express.urlencoded({ limit: "25mb", extended: true }));
 const fileUpload = require("express-fileupload");
 
 app.use(
