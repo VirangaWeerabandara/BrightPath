@@ -217,7 +217,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={loading}
-              className="hover:bg-primary-700 rounded-md bg-primary-600 px-4 py-2 text-white disabled:opacity-50"
+              className="rounded-md bg-primary-600 px-4 py-2 text-white hover:bg-primary-600 disabled:opacity-50"
             >
               {loading ? "Updating..." : "Update Profile"}
             </button>
@@ -228,7 +228,7 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={() => setShowPasswordChange(!showPasswordChange)}
-            className="hover:text-primary-700 text-primary-600"
+            className="text-primary-600 hover:text-primary-600"
           >
             {showPasswordChange ? "Cancel Password Change" : "Change Password"}
           </button>
@@ -344,7 +344,7 @@ export default function ProfilePage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="hover:bg-primary-700 rounded-md bg-primary-600 px-4 py-2 text-white disabled:opacity-50"
+                  className="rounded-md bg-primary-600 px-4 py-2 text-white hover:bg-primary-600 disabled:opacity-50"
                 >
                   {loading ? "Updating Password..." : "Update Password"}
                 </button>
