@@ -216,7 +216,7 @@ export default function TeacherCoursePage() {
           <h1 className="text-2xl font-bold text-gray-900">My Courses</h1>
           <button
             onClick={() => navigate("/create-course")}
-            className="hover:bg-primary-700 rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors"
+            className="rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-600"
           >
             Create New Course
           </button>
@@ -233,10 +233,10 @@ export default function TeacherCoursePage() {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 pr-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-600"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-600"
             />
             <svg
-              className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+              className="absolute left-3 top-2.5 size-5 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -254,7 +254,7 @@ export default function TeacherCoursePage() {
         {/* Courses Grid */}
         {loading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
+            <div className="size-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
           </div>
         ) : (
           <>
