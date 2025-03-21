@@ -2,12 +2,14 @@ services:
   backend:
     build: ./backend
     ports:
-      - "5000:5000"
+      - "4000:4000"
     volumes:
       - ./backend:/app
       - /app/node_modules
     environment:
       - NODE_ENV=production
+    networks:
+      - brightpath
 
   frontend:
     build: ./frontend
@@ -15,3 +17,9 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    networks:
+      - brightpath
+
+networks:
+  brightpath:
+    driver: bridge
