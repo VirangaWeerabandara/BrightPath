@@ -17,16 +17,16 @@ pipeline {
         } 
         stage('Frontend Tests') {
             steps {
-                dir('client') {
+                dir('frontend') {
                     sh 'npm install'
                     sh 'export REACT_APP_API_URL=$REACT_APP_API_URL'
                     // sh 'npm test'
                 }
             }
         }
-        stage('Server Tests') {
+        stage('Backend Tests') {
             steps {
-                dir('server') {
+                dir('backend') {
                     sh 'npm install'
                     sh 'export MONGO_URI=$MONGO_URI'
                     sh 'export PORT=$PORT'
