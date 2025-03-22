@@ -1,11 +1,11 @@
-const { login } = require("../../controllers/authController");
-const Student = require("../../models/studentModel");
-const Teacher = require("../../models/teacherModel");
+const { login } = require("../controllers/authController");
+const Student = require("../models/studentModel");
+const Teacher = require("../models/teacherModel");
 const jwt = require("jsonwebtoken");
 
 // Mock dependencies
-jest.mock("../../models/studentModel");
-jest.mock("../../models/teacherModel");
+jest.mock("../models/studentModel");
+jest.mock("../models/teacherModel");
 jest.mock("jsonwebtoken");
 
 describe("Auth Controller", () => {
