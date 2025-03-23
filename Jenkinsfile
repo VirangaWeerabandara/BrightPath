@@ -18,7 +18,7 @@ pipeline {
         stage('Frontend Tests') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    // sh 'npm install'
                     sh 'export REACT_APP_API_URL=$REACT_APP_API_URL'
                     // sh 'npm test'
                 }
@@ -27,7 +27,7 @@ pipeline {
         stage('Backend Tests') {
             steps {
                 dir('backend') {
-                    sh 'npm install'
+                    // sh 'npm install'
                     sh 'export MONGO_URI=$MONGO_URI'
                     sh 'export PORT=$PORT'
                     sh 'export CORS_ORIGIN=$CORS_ORIGIN'
