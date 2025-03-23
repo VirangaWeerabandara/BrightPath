@@ -33,40 +33,56 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Backend Tests') {
+        // stage('Backend Tests') {
+        //     steps {
+        //         dir('backend') {
+        //             sh 'npm install'
+        //             sh 'export MONGO_URI=$MONGO_URI'
+        //             sh 'export PORT=$PORT'
+        //             sh 'export CORS_ORIGIN=$CORS_ORIGIN'
+        //             sh 'export SECRET=$SECRET'
+        //             sh 'export CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY'
+        //             sh 'export CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET'
+        //             sh 'export CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME'
+        //             sh 'npm test'
+        //         }
+        //     }
+        // }
+        stage('Make .env file frontend'){
             steps {
-                dir('backend') {
-                    sh 'npm install'
-                    sh 'export MONGO_URI=$MONGO_URI'
-                    sh 'export PORT=$PORT'
-                    sh 'export CORS_ORIGIN=$CORS_ORIGIN'
-                    sh 'export SECRET=$SECRET'
-                    sh 'export CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY'
-                    sh 'export CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET'
-                    sh 'export CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME'
-                    sh 'npm test'
-                }
+                sh 'echo REACT_APP_API_URL=$REACT_APP_API_URL > ./frontend/.env'
             }
         }
-        // stage('Build Docker Images') {
-        //     steps {
-        //         sh 'docker build -t $DOCKER_HUB_USERNAME/brightpath-frontend:latest ./frontend'
-        //         sh 'docker build -t $DOCKER_HUB_USERNAME/brightpath-backend:latest ./backend'
-        //     }
-        // }
+        stage('Make .env file backend'){
+            steps {
+                sh 'echo MONGO_URI=$MONGO_URI > ./backend/.env'
+                sh 'echo PORT=$PORT >> ./backend/.env'
+                sh 'echo CORS_ORIGIN=$CORS_ORIGIN >> ./backend/.env'
+                sh 'echo SECRET=$SECRET >> ./backend/.env'
+                sh 'echo CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY >> ./backend/.env'
+                sh 'echo CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET >> ./backend/.env'
+                sh 'echo CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME >> ./backend/.env'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                sh 'docker build -t $DOCKER_HUB_USERNAME/brightpath-frontend:latest ./frontend'
+                sh 'docker build -t $DOCKER_HUB_USERNAME/brightpath-backend:latest ./backend'
+            }
+        }
 
-        // stage('Login to Docker Hub') {
-        //     steps {
-        //         sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-        //     }
-        // }
+        stage('Login to Docker Hub') {
+            steps {
+                sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
 
-        // stage('Push Images to Docker Hub') {
-        //     steps {
-        //         sh 'docker push $DOCKER_HUB_USERNAME/brightpath-frontend:latest'
-        //         sh 'docker push $DOCKER_HUB_USERNAME/brightpath-backend:latest'
-        //     }
-        // }
+        stage('Push Images to Docker Hub') {
+            steps {
+                sh 'docker push $DOCKER_HUB_USERNAME/brightpath-frontend:latest'
+                sh 'docker push $DOCKER_HUB_USERNAME/brightpath-backend:latest'
+            }
+        }
 
         // stage('Deploy on EC2') {
         //     steps {
