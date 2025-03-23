@@ -7,6 +7,15 @@ pipeline {
         SSH_KEY = credentials('EC2_SSH_KEY')
         DOCKER_HUB_CREDENTIALS = credentials('DOCKER_HUB_CREDENTIALS')
         DOCKER_HUB_USERNAME = credentials('DOCKER_HUB_USERNAME')
+
+        REACT_APP_API_URL = credentials('REACT_APP_API_URL')
+        MONGO_URI = credentials('MONGO_URI')
+        PORT = credentials('PORT')
+        CORS_ORIGIN = credentials('CORS_ORIGIN')
+        SECRET = credentials('SECRET')
+        CLOUDINARY_API_KEY = credentials('CLOUDINARY_API_KEY')
+        CLOUDINARY_API_SECRET = credentials('CLOUDINARY_API_SECRET')
+        CLOUDINARY_CLOUD_NAME = credentials('CLOUDINARY_CLOUD_NAME')
     }
 
     stages {
@@ -15,19 +24,19 @@ pipeline {
                 checkout scm
             }
         } 
-        stage('Frontend Tests') {
-            steps {
-                dir('frontend') {
-                    // sh 'npm install'
-                    sh 'export REACT_APP_API_URL=$REACT_APP_API_URL'
-                    // sh 'npm test'
-                }
-            }
-        }
+        // stage('Frontend Tests') {
+        //     steps {
+        //         dir('frontend') {
+        //             // sh 'npm install'
+        //             sh 'export REACT_APP_API_URL=$REACT_APP_API_URL'
+        //             // sh 'npm test'
+        //         }
+        //     }
+        // }
         stage('Backend Tests') {
             steps {
                 dir('backend') {
-                    // sh 'npm install'
+                    sh 'npm install'
                     sh 'export MONGO_URI=$MONGO_URI'
                     sh 'export PORT=$PORT'
                     sh 'export CORS_ORIGIN=$CORS_ORIGIN'
@@ -35,7 +44,7 @@ pipeline {
                     sh 'export CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY'
                     sh 'export CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET'
                     sh 'export CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME'
-                    // sh 'npm test'
+                    sh 'npm test'
                 }
             }
         }
