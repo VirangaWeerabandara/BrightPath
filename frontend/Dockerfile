@@ -1,14 +1,18 @@
-FROM node:18-alpine
+FROM node:18-alpine as build
 
 WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy application code
+# Copy source code
 COPY . .
+
+# Build the app
+RUN npm run build
 
 EXPOSE 3000
 
+# Start nginx
 CMD ["npm", "start"]

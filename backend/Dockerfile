@@ -1,19 +1,19 @@
-# Use the official Node.js image (same version as your local system)
 FROM node:18-alpine
-# Set the working directory inside the container
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm ci --only=production
 
-# Install dependencies (including bcrypt)
-RUN apt-get update && apt-get install -y python3 g++ make && \
-    npm install
-
-# Copy the rest of the app files
+# Copy the rest of the application
 COPY . .
 
-# Expose the port your backend uses
+# Environment variables will be supplied through docker-compose
+ENV PORT=4000
+ENV NODE_ENV=production
+
+# Expose application port
 EXPOSE 4000
 
 # Start the application
