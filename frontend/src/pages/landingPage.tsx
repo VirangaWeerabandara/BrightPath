@@ -444,10 +444,11 @@ function LandingPage() {
             <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
               <div>
                 <Footer.Brand
-                  href="https://flowbite.com"
+                  onClick={() => navigate("/")}
                   src={logo}
                   alt="BrightPath Logo"
                   name="BrightPath"
+                  className="cursor-pointer"
                 />
               </div>
               <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
