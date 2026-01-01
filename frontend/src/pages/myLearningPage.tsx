@@ -217,12 +217,13 @@ const MyLearningPage = () => {
                     You haven't enrolled in any courses yet
                   </p>
                   <motion.div
+                    className="flex justify-center"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button
                       onClick={() => navigate("/courses")}
-                      gradientDuoTone="purpleToBlue"
+                      className="hover:bg-primary-700 focus:ring-primary-400 rounded-full bg-primary-600 px-6 py-2 font-semibold text-white shadow-lg transition-colors duration-150 focus:ring-2"
                     >
                       Browse Courses
                     </Button>

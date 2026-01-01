@@ -15,9 +15,6 @@ const handleError = (error, res) => {
 
 // Create Course
 const createCourse = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const {
       name,
@@ -86,16 +83,12 @@ const createCourse = async (req, res) => {
       enrolledStudents: [],
     });
 
-    const savedCourse = await newCourse.save({ session });
+    const savedCourse = await newCourse.save();
 
     // Add course to teacher's courses array
-    await Teacher.findByIdAndUpdate(
-      teacherId,
-      { $push: { courses: savedCourse._id } },
-      { session }
-    );
-
-    await session.commitTransaction();
+    await Teacher.findByIdAndUpdate(teacherId, {
+      $push: { courses: savedCourse._id },
+    });
 
     return res.status(201).json({
       success: true,
@@ -103,10 +96,7 @@ const createCourse = async (req, res) => {
       data: savedCourse,
     });
   } catch (error) {
-    await session.abortTransaction();
     return handleError(error, res);
-  } finally {
-    session.endSession();
   }
 };
 // Get All Courses
@@ -160,9 +150,6 @@ const getCourseById = async (req, res) => {
 
 // Update Course
 const updateCourse = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -196,7 +183,7 @@ const updateCourse = async (req, res) => {
     const course = await Course.findByIdAndUpdate(
       id,
       { $set: updates },
-      { new: true, runValidators: true, session }
+      { new: true, runValidators: true }
     ).populate("teacherId", "firstName lastName email");
 
     if (!course) {
@@ -206,26 +193,18 @@ const updateCourse = async (req, res) => {
       });
     }
 
-    await session.commitTransaction();
-
     return res.status(200).json({
       success: true,
       message: "Course updated successfully",
       data: course,
     });
   } catch (error) {
-    await session.abortTransaction();
     return handleError(error, res);
-  } finally {
-    session.endSession();
   }
 };
 
 // Delete Course
 const deleteCourse = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
 
@@ -245,25 +224,18 @@ const deleteCourse = async (req, res) => {
     }
 
     // Remove course from teacher's courses array
-    await Teacher.findByIdAndUpdate(
-      course.teacherId,
-      { $pull: { courses: id } },
-      { session }
-    );
+    await Teacher.findByIdAndUpdate(course.teacherId, {
+      $pull: { courses: id },
+    });
 
-    await Course.findByIdAndDelete(id).session(session);
-
-    await session.commitTransaction();
+    await Course.findByIdAndDelete(id);
 
     return res.status(200).json({
       success: true,
       message: "Course deleted successfully",
     });
   } catch (error) {
-    await session.abortTransaction();
     return handleError(error, res);
-  } finally {
-    session.endSession();
   }
 };
 
@@ -311,9 +283,6 @@ const getCoursesByTeacher = async (req, res) => {
 
 // Enroll Student in Course
 const enrollStudent = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { studentId } = req.body;
     const { id: courseId } = req.params;
@@ -354,16 +323,12 @@ const enrollStudent = async (req, res) => {
     }
 
     course.enrolledStudents.push(studentId);
-    await course.save({ session });
+    await course.save();
 
     // Add course to student's enrolled courses (if you have this field in your student model)
-    await Student.findByIdAndUpdate(
-      studentId,
-      { $push: { enrolledCourses: courseId } },
-      { session }
-    );
-
-    await session.commitTransaction();
+    await Student.findByIdAndUpdate(studentId, {
+      $push: { enrolledCourses: courseId },
+    });
 
     return res.status(200).json({
       success: true,
@@ -371,10 +336,7 @@ const enrollStudent = async (req, res) => {
       data: course,
     });
   } catch (error) {
-    await session.abortTransaction();
     return handleError(error, res);
-  } finally {
-    session.endSession();
   }
 };
 

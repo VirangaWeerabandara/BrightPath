@@ -44,14 +44,14 @@ export const Sidebar = () => {
 
   return (
     <div
-      className={`fixed left-0 top-0 z-20 flex h-screen flex-col border-r bg-white shadow-lg transition-all duration-300 ease-in-out ${
+      className={`fixed left-0 top-0 z-20 flex h-screen flex-col border-r bg-white shadow-lg ${
         isCollapsed ? "w-20" : "w-64"
       }`}
     >
       {/* Toggle Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-8 rounded-full border bg-white p-1.5 shadow-md transition-all duration-200 hover:shadow-lg"
+        className="absolute -right-3 top-8 rounded-full border bg-white p-1.5 shadow-md hover:shadow-lg"
       >
         {isCollapsed ? (
           <FaChevronRight className="size-4 text-gray-600" />
@@ -83,7 +83,7 @@ export const Sidebar = () => {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`flex w-full items-center rounded-lg p-3 transition-all duration-200 ${
+            className={`flex w-full items-center rounded-lg p-3 ${
               isActive(item.path)
                 ? "bg-primary-600 text-white"
                 : "text-gray-600 hover:border-2 hover:border-primary-600 hover:text-primary-600"
@@ -99,7 +99,7 @@ export const Sidebar = () => {
       <div className="border-t p-4">
         <button
           onClick={() => navigate("/profile")}
-          className={`mb-4 flex w-full items-center rounded-lg p-2 transition-all duration-200 hover:border-2 hover:border-primary-600 ${
+          className={`mb-4 flex w-full items-center rounded-lg p-2 hover:border-2 hover:border-primary-600 ${
             isCollapsed ? "justify-center" : ""
           }`}
         >
@@ -120,7 +120,7 @@ export const Sidebar = () => {
 
         <button
           onClick={handleLogout}
-          className={`flex w-full items-center rounded-lg p-3 text-red-600 transition-all duration-200 hover:bg-red-50 ${
+          className={`flex w-full items-center rounded-lg p-3 text-red-600 hover:bg-red-50 ${
             isCollapsed ? "justify-center" : ""
           }`}
         >
