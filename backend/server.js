@@ -44,6 +44,11 @@ app.get("/", (req, res) => {
   res.json({ msg: "Welcome to BrightPath Learning Platform" });
 });
 
+// Health Check
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 const studentRoutes = require("./routes/student");
 const teacherRoutes = require("./routes/teacher");
 const authRoutes = require("./routes/auth");
@@ -69,7 +74,7 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT, "0.0.0.0", () => {
       console.log("Connected to DB and listening on port", process.env.PORT);
     });
   })
