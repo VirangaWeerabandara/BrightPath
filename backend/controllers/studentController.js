@@ -38,9 +38,6 @@ const signupStudent = async (req, res) => {
 };
 
 const enrollInCourse = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { courseId } = req.params;
     const studentId = req.user._id;
@@ -68,7 +65,7 @@ const enrollInCourse = async (req, res) => {
 
     // Add course to student's courses
     student.courses.push(courseId);
-    await student.save({ session });
+    await student.save();
 
     // Initialize enrolledStudents array if it doesn't exist
     if (!course.enrolledStudents) {
@@ -77,9 +74,7 @@ const enrollInCourse = async (req, res) => {
 
     // Add student to course's enrolledStudents
     course.enrolledStudents.push(studentId);
-    await course.save({ session });
-
-    await session.commitTransaction();
+    await course.save();
 
     res.status(200).json({
       success: true,
@@ -87,10 +82,7 @@ const enrollInCourse = async (req, res) => {
       courseId: courseId,
     });
   } catch (error) {
-    await session.abortTransaction();
     res.status(400).json({ error: error.message });
-  } finally {
-    session.endSession();
   }
 };
 
