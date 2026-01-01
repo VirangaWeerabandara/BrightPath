@@ -15,9 +15,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy only what's needed to run
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package*.json ./
+# Copy dependencies and source from build stage
 COPY --from=build /app .
 
 # Environment variables will be supplied through docker-compose
