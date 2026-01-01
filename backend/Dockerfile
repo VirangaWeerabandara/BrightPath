@@ -1,5 +1,5 @@
-# Build stage
-FROM node:18-alpine AS build
+# Force rebuild: v2
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -7,16 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copy app source
+# Copy app source - this layer changes when code changes
 COPY . .
-
-# Runtime stage
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Copy dependencies and source from build stage
-COPY --from=build /app .
 
 # Environment variables will be supplied through docker-compose
 ENV PORT=4000
