@@ -318,203 +318,248 @@ export default function CreateCoursePage() {
       <DashboardLayout>
         <div className="container mx-auto px-4 py-8">
           <motion.div
-            className="mb-8 flex items-center justify-between"
+            className="mb-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-3xl font-bold">Create New Course</h1>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button onClick={handleSubmit} disabled={loading} color="purple">
-                {loading ? "Creating..." : "Create Course"}
-              </Button>
-            </motion.div>
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 p-8 text-white shadow-xl">
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <h1 className="mb-2 text-4xl font-bold">
+                    Create New Course 🎓
+                  </h1>
+                  <p className="text-lg text-purple-100">
+                    Share your knowledge with the world
+                  </p>
+                </div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="rounded-xl bg-white px-6 py-3 font-semibold text-purple-600 shadow-lg transition-all hover:bg-purple-50 disabled:opacity-50"
+                  >
+                    {loading ? "Creating..." : "Create Course"}
+                  </button>
+                </motion.div>
+              </div>
+            </div>
           </motion.div>
 
-          <form className="max-w-8xl mx-auto space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Course Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={courseData.name}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                placeholder="Enter course name"
-              />
-            </div>
+          <motion.div
+            className="mb-6 rounded-2xl bg-white p-8 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h2 className="mb-6 text-2xl font-bold text-gray-800">
+              Course Information
+            </h2>
+            <form className="space-y-6">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Course Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={courseData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  placeholder="e.g., Complete Web Development Bootcamp"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={courseData.description}
-                onChange={handleInputChange}
-                required
-                rows={4}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                placeholder="Enter course description"
-              />
-            </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={courseData.description}
+                  onChange={handleInputChange}
+                  required
+                  rows={4}
+                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  placeholder="Describe what students will learn in this course..."
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Category
-              </label>
-              <select
-                name="category"
-                value={courseData.category}
-                onChange={handleInputChange}
-                required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Category
+                </label>
+                <select
+                  name="category"
+                  value={courseData.category}
+                  onChange={handleInputChange}
+                  required
+                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                >
+                  <option value="">Select a category</option>
+                  {COURSE_CATEGORIES.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </form>
+          </motion.div>
+
+          <motion.div
+            className="space-y-4 rounded-2xl bg-white p-8 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Course Content
+              </h2>
+              <motion.button
+                onClick={addNewVideoRow}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl"
               >
-                <option value="">Select a category</option>
-                {COURSE_CATEGORIES.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+                + Add Video
+              </motion.button>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Course Content</h2>
-                <Button onClick={addNewVideoRow} color="purple">
-                  Add Video
-                </Button>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                        Video Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                        Video
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                        Thumbnail
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {videos.map((video) => (
-                      // Replace the existing table row code (inside the videos.map) with this:
-                      // Replace the existing table row code (inside the videos.map) with this:
-                      <tr key={video.id}>
-                        <td className="px-6 py-4">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gradient-to-r from-purple-50 to-indigo-50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-purple-600">
+                      Video Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-purple-600">
+                      Video
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-purple-600">
+                      Thumbnail
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-purple-600">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {videos.map((video) => (
+                    // Replace the existing table row code (inside the videos.map) with this:
+                    // Replace the existing table row code (inside the videos.map) with this:
+                    <tr
+                      key={video.id}
+                      className="transition-colors hover:bg-purple-50"
+                    >
+                      <td className="px-6 py-4">
+                        <input
+                          type="text"
+                          value={video.name}
+                          onChange={(e) => {
+                            setVideos((prevVideos) =>
+                              prevVideos.map((v) =>
+                                v.id === video.id
+                                  ? { ...v, name: e.target.value }
+                                  : v,
+                              ),
+                            );
+                          }}
+                          className="w-full rounded-lg border-2 border-gray-200 px-3 py-2 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="space-y-2">
                           <input
-                            type="text"
-                            value={video.name}
-                            onChange={(e) => {
-                              setVideos((prevVideos) =>
-                                prevVideos.map((v) =>
-                                  v.id === video.id
-                                    ? { ...v, name: e.target.value }
-                                    : v,
-                                ),
-                              );
-                            }}
-                            className="w-full rounded border px-2 py-1"
+                            type="file"
+                            accept="video/*"
+                            onChange={(e) =>
+                              handleFileUpload(e, video.id, "video")
+                            }
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-purple-700 hover:file:bg-purple-100"
                           />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="space-y-2">
-                            <input
-                              type="file"
-                              accept="video/*"
-                              onChange={(e) =>
-                                handleFileUpload(e, video.id, "video")
-                              }
-                              className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
-                            />
-                            <div className="flex items-center space-x-2">
-                              <div className="h-1 flex-grow rounded bg-gray-200">
-                                {video.videoUploadProgress > 0 && (
-                                  <div
-                                    className={`h-full rounded transition-all duration-300 ${
-                                      video.videoUrl
-                                        ? "bg-green-500"
-                                        : "bg-blue-500"
-                                    }`}
-                                    style={{
-                                      width: `${video.videoUploadProgress}%`,
-                                    }}
-                                  />
-                                )}
-                              </div>
-                              <FaCheckCircle
-                                className={`text-lg transition-colors duration-300 ${
-                                  video.videoUrl
-                                    ? "text-green-500"
-                                    : "text-gray-300"
-                                }`}
-                              />
+                          <div className="flex items-center space-x-2">
+                            <div className="h-2 flex-grow rounded-full bg-gray-200">
+                              {video.videoUploadProgress > 0 && (
+                                <div
+                                  className={`h-full rounded-full transition-all duration-300 ${
+                                    video.videoUrl
+                                      ? "bg-gradient-to-r from-green-500 to-green-600"
+                                      : "bg-gradient-to-r from-purple-500 to-purple-600"
+                                  }`}
+                                  style={{
+                                    width: `${video.videoUploadProgress}%`,
+                                  }}
+                                />
+                              )}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="space-y-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) =>
-                                handleFileUpload(e, video.id, "thumbnail")
-                              }
-                              className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                            <FaCheckCircle
+                              className={`text-lg transition-colors duration-300 ${
+                                video.videoUrl
+                                  ? "text-green-500"
+                                  : "text-gray-300"
+                              }`}
                             />
-                            <div className="flex items-center space-x-2">
-                              <div className="h-1 flex-grow rounded bg-gray-200">
-                                {video.thumbnailUploadProgress > 0 && (
-                                  <div
-                                    className={`h-full rounded transition-all duration-300 ${
-                                      video.thumbnailUrl
-                                        ? "bg-green-500"
-                                        : "bg-blue-500"
-                                    }`}
-                                    style={{
-                                      width: `${video.thumbnailUploadProgress}%`,
-                                    }}
-                                  />
-                                )}
-                              </div>
-                              <FaCheckCircle
-                                className={`text-lg transition-colors duration-300 ${
-                                  video.thumbnailUrl
-                                    ? "text-green-500"
-                                    : "text-gray-300"
-                                }`}
-                              />
-                            </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(video.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <FaTrash />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="space-y-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) =>
+                              handleFileUpload(e, video.id, "thumbnail")
+                            }
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                          />
+                          <div className="flex items-center space-x-2">
+                            <div className="h-2 flex-grow rounded-full bg-gray-200">
+                              {video.thumbnailUploadProgress > 0 && (
+                                <div
+                                  className={`h-full rounded-full transition-all duration-300 ${
+                                    video.thumbnailUrl
+                                      ? "bg-gradient-to-r from-green-500 to-green-600"
+                                      : "bg-gradient-to-r from-indigo-500 to-indigo-600"
+                                  }`}
+                                  style={{
+                                    width: `${video.thumbnailUploadProgress}%`,
+                                  }}
+                                />
+                              )}
+                            </div>
+                            <FaCheckCircle
+                              className={`text-lg transition-colors duration-300 ${
+                                video.thumbnailUrl
+                                  ? "text-green-500"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <motion.button
+                          type="button"
+                          onClick={() => handleDelete(video.id)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="rounded-lg bg-red-50 p-2 text-red-600 transition-all hover:bg-red-100 hover:text-red-700"
+                        >
+                          <FaTrash />
+                        </motion.button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </form>
+          </motion.div>
         </div>
       </DashboardLayout>
     </PageTransition>
