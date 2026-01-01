@@ -1,23 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import axios from "axios";
 import { env } from "../config/env.config";
-import { FaUserCircle } from "react-icons/fa";
-import logo from "../assets/logo.png";
-import background from "../assets/background2.png";
-import { Footer } from "flowbite-react";
+import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
 import {
-  BsDribbble,
-  BsFacebook,
-  BsGithub,
-  BsInstagram,
-  BsTwitter,
-} from "react-icons/bs";
+  PageTransition,
+  containerVariants,
+  itemVariants,
+} from "../components/pageTransition";
 
 interface Course {
   _id: string;
   name: string;
   description: string;
+  category?: string;
   videos: string[];
   titles: string[];
   thumbnails: string[];
@@ -28,12 +25,6 @@ interface Course {
   };
 }
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
 export default function CourseViewPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
@@ -41,135 +32,154 @@ export default function CourseViewPage() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [user] = useState<User | null>(
-    JSON.parse(localStorage.getItem("user") || "null"),
-  );
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchCourse = async () => {
       try {
         const response = await axios.get(`${env.apiUrl}/courses/${courseId}`);
-        setCourse(response.data.data);
-        setLoading(false);
+        if (isMounted) {
+          setCourse(response.data.data);
+          setLoading(false);
+        }
       } catch (err: any) {
-        setError(err.message);
-        setLoading(false);
+        if (isMounted) {
+          setError(err.message);
+          setLoading(false);
+        }
       }
     };
 
     fetchCourse();
+
+    return () => {
+      isMounted = false;
+    };
   }, [courseId]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex h-screen items-center justify-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/");
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!course) return <div>No course found</div>;
-
-  return (
-    <section
-      className="flex min-h-screen flex-col bg-white bg-cover [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100/20 [&::-webkit-scrollbar]:w-2"
-      style={{ backgroundImage: `url(${background})` }}
-    >
-      {/* Navigation Bar */}
-      <div className="sticky top-0 z-50 border-b border-white/10 bg-white/10 backdrop-blur-lg">
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            {/* Left Section */}
-            <div className="flex items-center space-x-6">
-              <div
-                className="flex cursor-pointer items-center space-x-2"
-                onClick={() => navigate("/")}
-              >
-                <img src={logo} alt="BrightPath Logo" className="size-8" />
-                <span className="text-xl font-bold text-gray-900">
-                  BrightPath
-                </span>
-              </div>
-              <div className="h-6 w-px bg-gray-200/50" />
-              <h1 className="text-lg font-semibold text-gray-900">
-                {course.name}
-              </h1>
-            </div>
-
-            {/* Right Section */}
-            {user && (
-              <div className="relative" ref={dropdownRef}>
-                <div
-                  className="flex cursor-pointer items-center space-x-2"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
-                  <FaUserCircle className="size-8 text-gray-700" />
-                  <span className="text-sm font-medium text-gray-700">
-                    {user.firstName}
-                  </span>
-                </div>
-
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg bg-white/90 py-1 shadow-lg backdrop-blur-sm">
-                    <button
-                      onClick={() => {
-                        navigate("/my-learning");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                    >
-                      My Learning
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigate("/settings");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                    >
-                      Settings
-                    </button>
-                    <hr className="my-1 border-gray-200" />
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100/80"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="rounded-2xl bg-red-50 p-8 text-red-800">
+            <h2 className="text-2xl font-bold">Error</h2>
+            <p className="mt-2">{error}</p>
+            <button
+              onClick={() => navigate(-1)}
+              className="mt-4 rounded-xl bg-red-600 px-6 py-2 text-white hover:bg-red-700"
+            >
+              Go Back
+            </button>
           </div>
         </div>
-      </div>
+      </DashboardLayout>
+    );
+  }
 
-      {/* Main Content */}
-      <div className="flex-1">
-        <div className="flex h-full">
-          {/* Video and Info Section - Add scrollbar styling */}
-          <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100/20 [&::-webkit-scrollbar]:w-2">
+  if (!course) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-gray-500">No course found</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <PageTransition>
+      <DashboardLayout>
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 p-8 text-white shadow-xl">
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <h1 className="mb-2 text-4xl font-bold">{course.name}</h1>
+                  <p className="text-lg text-purple-100">
+                    {course.category || "Course"}
+                  </p>
+                </div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="rounded-xl bg-white px-6 py-3 font-semibold text-purple-600 shadow-lg transition-all hover:bg-purple-50"
+                  >
+                    ← Back
+                  </button>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Course Info */}
+          <motion.div
+            className="mb-6 rounded-2xl bg-white p-8 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h2 className="mb-4 text-2xl font-bold text-gray-800">
+              About this Course
+            </h2>
+            <p className="mb-6 leading-relaxed text-gray-700">
+              {course.description}
+            </p>
+
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                Instructor
+              </h3>
+              <div className="flex items-center space-x-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-white">
+                  <span className="font-semibold">
+                    {course.teacherId.firstName[0]}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {course.teacherId.firstName} {course.teacherId.lastName}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {course.teacherId.email}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Course Content */}
+          <motion.div
+            className="rounded-2xl bg-white p-8 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h2 className="mb-6 text-2xl font-bold text-gray-800">
+              Course Content
+            </h2>
+
             {/* Video Player */}
-            <div className="aspect-video bg-black shadow-lg">
+            <div className="mb-8 aspect-video overflow-hidden rounded-2xl bg-black shadow-lg">
               <video
                 key={course.videos[currentVideoIndex]}
                 className="size-full"
@@ -179,114 +189,69 @@ export default function CourseViewPage() {
               />
             </div>
 
-            {/* Video Info */}
-            <div className="p-6">
-              <h1 className="text-2xl font-bold text-gray-900">
+            {/* Current Video Info */}
+            <div className="mb-8 border-b border-gray-200 pb-6">
+              <h3 className="mb-2 text-2xl font-bold text-gray-900">
                 {course.titles[currentVideoIndex]}
-              </h1>
-              <p className="mt-2 text-sm text-gray-800">
+              </h3>
+              <p className="text-gray-600">
                 Instructor: {course.teacherId.firstName}{" "}
                 {course.teacherId.lastName}
               </p>
-              <div className="mt-4 border-t border-gray-200/50 pt-4">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  About this course
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-gray-800">
-                  {course.description}
-                </p>
-              </div>
             </div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="h-full w-80 border-l border-white/20 bg-white/20 backdrop-blur-md">
-            <div className="p-4">
-              <h3 className="mb-4 font-semibold text-gray-900">
-                Course Content
+            {/* Video List */}
+            <div>
+              <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                Videos in this Course
               </h3>
-              <div className="h-[calc(100vh-180px)] space-y-2 overflow-y-auto pr-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100/60 [&::-webkit-scrollbar]:w-2">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {course.videos.map((video, index) => (
-                  <button
+                  <motion.button
                     key={index}
                     onClick={() => setCurrentVideoIndex(index)}
-                    className={`w-full rounded-lg p-2 text-left transition-all ${
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`overflow-hidden rounded-xl transition-all ${
                       currentVideoIndex === index
-                        ? "bg-white/30 backdrop-blur-md"
-                        : "backdrop-blur-sm hover:bg-white/20"
+                        ? "shadow-lg ring-2 ring-purple-600"
+                        : "shadow-md hover:shadow-lg"
                     }`}
                   >
-                    <div className="mb-2 aspect-video overflow-hidden rounded-lg shadow-sm">
+                    <div className="aspect-video overflow-hidden bg-black">
                       <img
                         src={course.thumbnails[index]}
                         alt={course.titles[index]}
                         className="size-full object-cover"
                       />
                     </div>
-                    <p
-                      className={`text-sm ${
+                    <div
+                      className={`p-4 ${
                         currentVideoIndex === index
-                          ? "font-medium text-purple-700"
-                          : "text-gray-800"
+                          ? "bg-purple-50"
+                          : "bg-white"
                       }`}
                     >
-                      {course.titles[index]}
-                    </p>
-                  </button>
+                      <p
+                        className={`text-sm font-semibold ${
+                          currentVideoIndex === index
+                            ? "text-purple-700"
+                            : "text-gray-900"
+                        }`}
+                      >
+                        {course.titles[index]}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Video {index + 1} of {course.videos.length}
+                      </p>
+                    </div>
+                  </motion.button>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
-      <Footer container className="mt-auto bg-primary-100">
-        <div className="w-full">
-          <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
-            <div>
-              <Footer.Brand
-                href="https://flowbite.com"
-                src={logo}
-                alt="BrightPath Logo"
-                name="BrightPath"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
-              <div>
-                <Footer.Title title="about" />
-                <Footer.LinkGroup col>
-                  <Footer.Link href="#">Flowbite</Footer.Link>
-                  <Footer.Link href="#">Tailwind CSS</Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-              <div>
-                <Footer.Title title="Follow us" />
-                <Footer.LinkGroup col>
-                  <Footer.Link href="#">Github</Footer.Link>
-                  <Footer.Link href="#">Discord</Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-              <div>
-                <Footer.Title title="Legal" />
-                <Footer.LinkGroup col>
-                  <Footer.Link href="#">Privacy Policy</Footer.Link>
-                  <Footer.Link href="#">Terms &amp; Conditions</Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-            </div>
-          </div>
-          <Footer.Divider />
-          <div className="w-full sm:flex sm:items-center sm:justify-between">
-            <Footer.Copyright href="#" by="BrightPath™" year={2024} />
-            <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
-              <Footer.Icon href="#" icon={BsFacebook} />
-              <Footer.Icon href="#" icon={BsInstagram} />
-              <Footer.Icon href="#" icon={BsTwitter} />
-              <Footer.Icon href="#" icon={BsGithub} />
-              <Footer.Icon href="#" icon={BsDribbble} />
-            </div>
-          </div>
-        </div>
-      </Footer>
-    </section>
+      </DashboardLayout>
+    </PageTransition>
   );
 }

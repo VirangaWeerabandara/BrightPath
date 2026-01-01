@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { Button } from "flowbite-react";
 import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
 import { env } from "../config/env.config";
-import { FaTrash, FaCheckCircle } from "react-icons/fa";
+import { FaTrash, FaCheckCircle, FaChevronDown } from "react-icons/fa";
 import {
   PageTransition,
   containerVariants,
@@ -42,6 +42,8 @@ export default function CreateCoursePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [courseData, setCourseData] = useState({
     name: "",
     description: "",
@@ -75,6 +77,22 @@ export default function CreateCoursePage() {
       navigate("/login");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -393,20 +411,61 @@ export default function CreateCoursePage() {
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Category
                 </label>
-                <select
-                  name="category"
-                  value={courseData.category}
-                  onChange={handleInputChange}
-                  required
-                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                >
-                  <option value="">Select a category</option>
-                  {COURSE_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative" ref={dropdownRef}>
+                  <motion.button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex w-full items-center justify-between rounded-xl border-2 border-gray-200 px-4 py-3 transition-all hover:border-purple-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  >
+                    <span
+                      className={
+                        courseData.category ? "text-gray-900" : "text-gray-500"
+                      }
+                    >
+                      {courseData.category || "Select a category"}
+                    </span>
+                    <motion.div
+                      animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <FaChevronDown className="text-purple-600" />
+                    </motion.div>
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-xl"
+                      >
+                        {COURSE_CATEGORIES.map((category) => (
+                          <motion.button
+                            key={category}
+                            type="button"
+                            onClick={() => {
+                              setCourseData({
+                                ...courseData,
+                                category,
+                              });
+                              setIsDropdownOpen(false);
+                            }}
+                            whileHover={{ backgroundColor: "#f5f3ff" }}
+                            className={`w-full px-4 py-3 text-left transition-all first:rounded-t-lg last:rounded-b-lg ${
+                              courseData.category === category
+                                ? "border-l-4 border-purple-600 bg-gradient-to-r from-purple-50 to-indigo-50 font-semibold text-purple-700"
+                                : "text-gray-700 hover:bg-purple-50"
+                            }`}
+                          >
+                            {category}
+                          </motion.button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </form>
           </motion.div>

@@ -80,12 +80,16 @@ export default function DashboardPage() {
   const [teacherName, setTeacherName] = useState<string>("");
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    setTeacherName(user.name || "Teacher");
+    let isMounted = true;
+
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+        if (!isMounted) return;
+
+        setTeacherName(user.name || "Teacher");
 
         const [coursesResponse, statsResponse] = await Promise.all([
           axios.get(`${env.apiUrl}/courses/teacher/${user._id}`, {
@@ -95,6 +99,8 @@ export default function DashboardPage() {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
+
+        if (!isMounted) return;
 
         setCourses(coursesResponse.data.data.courses);
         setStats(statsResponse.data.data);
@@ -116,14 +122,20 @@ export default function DashboardPage() {
         );
 
         setCategoryData(categoryStats);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchDashboardData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (loading) {
