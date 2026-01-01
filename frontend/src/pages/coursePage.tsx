@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import background from "../assets/background2.png";
 import logo from "../assets/logo.png";
 import ProductCard from "../components/productCard";
@@ -17,6 +18,11 @@ import {
   BsGithub,
   BsDribbble,
 } from "react-icons/bs";
+import {
+  PageTransition,
+  containerVariants,
+  itemVariants,
+} from "../components/pageTransition";
 
 const COURSE_CATEGORIES = [
   "All",
@@ -109,12 +115,17 @@ const CoursePage = () => {
   });
 
   return (
-    <>
+    <PageTransition>
       <section
         className="flex h-[2048px] flex-col bg-white bg-cover   sm:h-[512px]  md:h-[1024px] lg:h-[2048px] "
         style={{ backgroundImage: `url(${background})` }}
       >
-        <div className="sticky top-0 z-50 border-b border-transparent bg-transparent backdrop-blur-lg">
+        <motion.div
+          className="sticky top-0 z-50 border-b border-transparent bg-transparent backdrop-blur-lg"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <div className="max-w-8xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between space-x-4">
               {/* Logo and Name */}
@@ -210,7 +221,7 @@ const CoursePage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
         <div className="max-w-8xl mx-auto px-4 py-2 sm:px-4 lg:px-4">
           <div className="relative px-10">
             {/* Left scroll button */}
@@ -227,7 +238,7 @@ const CoursePage = () => {
               className="flex items-center justify-start space-x-2 overflow-x-hidden px-8"
             >
               {COURSE_CATEGORIES.map((category) => (
-                <button
+                <motion.button
                   key={category}
                   onClick={() => handleCategorySelect(category)}
                   className={`
@@ -238,9 +249,11 @@ const CoursePage = () => {
                     : "bg-white/70 text-gray-700 backdrop-blur-sm hover:bg-white/90 hover:text-gray-900"
                 }
             `}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {category}
-                </button>
+                </motion.button>
               ))}
             </div>
 
@@ -253,7 +266,12 @@ const CoursePage = () => {
             </button>
           </div>
         </div>
-        <div className="mx-auto max-w-7.5xl px-2 sm:px-4 lg:px-6">
+        <motion.div
+          className="mx-auto max-w-7.5xl px-2 sm:px-4 lg:px-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <div className="mx-auto max-w-md text-center">
             <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
               {selectedCategory} Courses
@@ -264,7 +282,13 @@ const CoursePage = () => {
             </p>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4">
+          <motion.div
+            className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            key={selectedCategory}
+          >
             {loading ? (
               <div className="col-span-full text-center text-gray-600">
                 <p>Loading courses...</p>
@@ -288,16 +312,17 @@ const CoursePage = () => {
               </div>
             ) : (
               <>
-                {filteredCourses.map((course) => (
-                  <ProductCard
-                    key={course._id}
-                    imageUrl={course.thumbnails?.[0]}
-                    courseName={course.name}
-                    category={course.category}
-                    _id={course._id}
-                    description={course.description}
-                    onClick={() => handleCourseClick(course)}
-                  />
+                {filteredCourses.map((course, index) => (
+                  <motion.div key={course._id} variants={itemVariants}>
+                    <ProductCard
+                      imageUrl={course.thumbnails?.[0]}
+                      courseName={course.name}
+                      category={course.category}
+                      _id={course._id}
+                      description={course.description}
+                      onClick={() => handleCourseClick(course)}
+                    />
+                  </motion.div>
                 ))}
 
                 {selectedCourse && (
@@ -310,8 +335,8 @@ const CoursePage = () => {
                 )}
               </>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         {user && (
           <SettingsCard
             show={showSettings}
@@ -369,7 +394,7 @@ const CoursePage = () => {
           </div>
         </Footer>
       </section>
-    </>
+    </PageTransition>
   );
 };
 export default CoursePage;

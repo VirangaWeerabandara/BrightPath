@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import background from "../assets/background2.png";
 import logo from "../assets/logo.png";
 import ProductCard from "../components/productCard";
@@ -9,6 +10,11 @@ import { useEffect, useRef } from "react";
 import { SignInForm } from "../components/signInForm";
 import { useEnrolledCourses } from "../hooks/useEnrolledCourses";
 import SettingsCard from "../components/SettingsCard";
+import {
+  PageTransition,
+  containerVariants,
+  itemVariants,
+} from "../components/pageTransition";
 
 const MyLearningPage = () => {
   const navigate = useNavigate();
@@ -56,12 +62,17 @@ const MyLearningPage = () => {
   }, []);
 
   return (
-    <>
+    <PageTransition>
       <section
         className="h-[2048px] bg-white bg-cover   sm:h-[512px]  md:h-[1024px] lg:h-[2048px] "
         style={{ backgroundImage: `url(${background})` }}
       >
-        <div className="sticky top-0 z-50 border-b border-transparent bg-transparent backdrop-blur-lg">
+        <motion.div
+          className="sticky top-0 z-50 border-b border-transparent bg-transparent backdrop-blur-lg"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <div className="max-w-8xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between space-x-4">
               {/* Logo and Name */}
@@ -157,28 +168,40 @@ const MyLearningPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="max-w-8xl mx-auto mt-2 px-4 sm:px-6 lg:px-8">
+        <motion.div
+          className="max-w-8xl mx-auto mt-2 px-4 sm:px-6 lg:px-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <div className="relative mb-10 flex items-center justify-between">
-            <div
+            <motion.div
               onClick={() => navigate("/courses")}
               className="group flex cursor-pointer items-center"
+              whileHover={{ x: -5 }}
+              transition={{ duration: 0.2 }}
             >
               <FaArrowLeft className="h-6 w-6 text-gray-600 transition-colors duration-200 group-hover:text-primary-600" />
               <span className="ml-2 text-gray-600 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 Browse Courses
               </span>
-            </div>
+            </motion.div>
             <div className="absolute left-1/2 -translate-x-1/2 transform">
               <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
                 My Courses
               </h2>
             </div>
           </div>
-        </div>
+        </motion.div>
         <div className="mx-auto max-w-7.5xl px-4 sm:px-6 lg:px-8">
-          <div className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4">
+          <motion.div
+            className="mt-10 grid grid-cols-2 gap-6 lg:mt-16 lg:grid-cols-4 lg:gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {loading ? (
               <div className="col-span-full py-10 text-center">
                 <p className="text-lg text-gray-600">Loading your courses...</p>
@@ -193,12 +216,17 @@ const MyLearningPage = () => {
                   <p className="text-lg text-gray-600">
                     You haven't enrolled in any courses yet
                   </p>
-                  <Button
-                    onClick={() => navigate("/courses")}
-                    gradientDuoTone="purpleToBlue"
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    Browse Courses
-                  </Button>
+                    <Button
+                      onClick={() => navigate("/courses")}
+                      gradientDuoTone="purpleToBlue"
+                    >
+                      Browse Courses
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             ) : filteredCourses.length === 0 ? (
@@ -209,18 +237,19 @@ const MyLearningPage = () => {
               </div>
             ) : (
               filteredCourses.map((course) => (
-                <ProductCard
-                  key={course._id}
-                  imageUrl={course.thumbnails?.[0]}
-                  courseName={course.name}
-                  category={course.category}
-                  _id={course._id}
-                  description={course.description}
-                  onClick={() => navigate(`/course/${course._id}`)}
-                />
+                <motion.div key={course._id} variants={itemVariants}>
+                  <ProductCard
+                    imageUrl={course.thumbnails?.[0]}
+                    courseName={course.name}
+                    category={course.category}
+                    _id={course._id}
+                    description={course.description}
+                    onClick={() => navigate(`/course/${course._id}`)}
+                  />
+                </motion.div>
               ))
             )}
-          </div>
+          </motion.div>
         </div>
         {user && (
           <SettingsCard
@@ -231,7 +260,7 @@ const MyLearningPage = () => {
           />
         )}
       </section>
-    </>
+    </PageTransition>
   );
 };
 export default MyLearningPage;

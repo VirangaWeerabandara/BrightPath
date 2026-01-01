@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Navbar, Footer } from "flowbite-react";
+import { motion } from "framer-motion";
 import logo from "../assets/logo.png";
 import picture from "../assets/picture.png";
 import courseIcon from "../assets/course.png";
@@ -20,25 +21,44 @@ import {
 } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
 import SettingsCard from "../components/SettingsCard";
+import {
+  PageTransition,
+  ScrollReveal,
+  containerVariants,
+  itemVariants,
+} from "../components/pageTransition";
 
 interface FeatureCardProps {
   icon: string;
   title: string;
   description: string;
+  index: number;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
   title,
   description,
+  index,
 }) => (
-  <div className="rounded-lg bg-white p-6 shadow">
-    <div className="mb-4 flex items-center justify-center">
+  <motion.div
+    className="rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-xl"
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.5, delay: index * 0.1 }}
+    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+  >
+    <motion.div
+      className="mb-4 flex items-center justify-center"
+      whileHover={{ scale: 1.1, rotate: 5 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
       <img src={icon} alt={title} className="size-12" />
-    </div>
+    </motion.div>
     <h3 className="mb-2 text-xl font-bold">{title}</h3>
     <p className="text-gray-600">{description}</p>
-  </div>
+  </motion.div>
 );
 
 function LandingPage() {
@@ -133,156 +153,182 @@ function LandingPage() {
     },
   ];
   return (
-    <>
+    <PageTransition>
       <div
         className=" h-screen bg-cover"
         style={{ backgroundImage: `url(${background})` }}
       >
-        <Navbar
-          fluid
-          rounded
-          className="fixed left-0 top-0 z-50 w-full bg-white/20 backdrop-blur-lg"
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          <Navbar.Brand
-            onClick={() => navigate("/")}
-            className="cursor-pointer"
+          <Navbar
+            fluid
+            rounded
+            className="fixed left-0 top-0 z-50 w-full bg-white/20 backdrop-blur-lg"
           >
-            <img src={logo} className="mr-3 h-6 sm:h-9" alt="BrightPath Logo" />
-            <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-              BrightPath
-            </span>
-          </Navbar.Brand>
-          <div className="flex md:order-2">
-            {user ? (
-              <div className="relative" ref={dropdownRef}>
-                <div
-                  className="flex cursor-pointer items-center space-x-2"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
-                  <FaUserCircle className="size-8 text-gray-700 " />
-                  <span className="font-medium text-gray-700">
-                    {user.firstName}
-                  </span>
-                </div>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg bg-white py-1 shadow-lg">
-                    {user.role === "teacher" ? (
-                      // Teacher dropdown options
-                      <>
-                        <button
-                          onClick={() => {
-                            navigate("/dashboard");
-                            setIsDropdownOpen(false);
-                          }}
-                          className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                        >
-                          <span>Dashboard</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            navigate("/create-course");
-                            setIsDropdownOpen(false);
-                          }}
-                          className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                        >
-                          <span>Create Course</span>
-                        </button>
-                        <hr className="my-1 border-gray-200" />
-                      </>
-                    ) : (
-                      // Student dropdown options
-                      <>
-                        <button
-                          onClick={() => {
-                            navigate("/my-learning");
-                            setIsDropdownOpen(false);
-                          }}
-                          className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                        >
-                          <span>My Learning</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setShowSettings(true);
-                            setIsDropdownOpen(false);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
-                        >
-                          Settings
-                        </button>
-                        <hr className="my-1 border-gray-200" />
-                      </>
-                    )}
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem("user");
-                        localStorage.removeItem("token");
-                        setUser(null);
-                        navigate("/");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100/80"
-                    >
-                      <span>Logout</span>
-                    </button>
+            <Navbar.Brand
+              onClick={() => navigate("/")}
+              className="cursor-pointer"
+            >
+              <img
+                src={logo}
+                className="mr-3 h-6 sm:h-9"
+                alt="BrightPath Logo"
+              />
+              <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+                BrightPath
+              </span>
+            </Navbar.Brand>
+            <div className="flex md:order-2">
+              {user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <div
+                    className="flex cursor-pointer items-center space-x-2"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <FaUserCircle className="size-8 text-gray-700 " />
+                    <span className="font-medium text-gray-700">
+                      {user.firstName}
+                    </span>
                   </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <Button
-                  onClick={() => setOpenModal(true)}
-                  outline
-                  gradientDuoTone="purpleToBlue"
-                  className="w-24 text-lg font-bold"
-                >
-                  Login
-                </Button>
-                <SignInForm
-                  openModal={openModal}
-                  setOpenModal={setOpenModal}
-                  emailInputRef={emailInputRef}
-                  onSignInSuccess={handleSignInSuccess}
-                />
-              </>
-            )}
-            <Navbar.Toggle />
-          </div>
-          <Navbar.Collapse>
-            <Navbar.Link
-              href="#home"
-              active
-              className="text-lg font-bold text-neutral-900"
-            >
-              Home
-            </Navbar.Link>
-            <Navbar.Link
-              onClick={() => navigate("/courses")}
-              className="cursor-pointer text-lg font-bold text-neutral-900"
-            >
-              Courses
-            </Navbar.Link>
-            <Navbar.Link
-              href="#about"
-              className="text-lg font-bold text-neutral-900"
-            >
-              About
-            </Navbar.Link>
-            <Navbar.Link
-              href="#contact"
-              className="text-lg font-bold text-neutral-900"
-            >
-              Contact
-            </Navbar.Link>
-          </Navbar.Collapse>
-        </Navbar>
+                  {isDropdownOpen && (
+                    <motion.div
+                      className="absolute right-0 z-50 mt-2 w-48 rounded-lg bg-white py-1 shadow-lg"
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {user.role === "teacher" ? (
+                        // Teacher dropdown options
+                        <>
+                          <button
+                            onClick={() => {
+                              navigate("/dashboard");
+                              setIsDropdownOpen(false);
+                            }}
+                            className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                          >
+                            <span>Dashboard</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              navigate("/create-course");
+                              setIsDropdownOpen(false);
+                            }}
+                            className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                          >
+                            <span>Create Course</span>
+                          </button>
+                          <hr className="my-1 border-gray-200" />
+                        </>
+                      ) : (
+                        // Student dropdown options
+                        <>
+                          <button
+                            onClick={() => {
+                              navigate("/my-learning");
+                              setIsDropdownOpen(false);
+                            }}
+                            className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                          >
+                            <span>My Learning</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowSettings(true);
+                              setIsDropdownOpen(false);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100/80"
+                          >
+                            Settings
+                          </button>
+                          <hr className="my-1 border-gray-200" />
+                        </>
+                      )}
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem("user");
+                          localStorage.removeItem("token");
+                          setUser(null);
+                          navigate("/");
+                          setIsDropdownOpen(false);
+                        }}
+                        className="flex w-full items-center space-x-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100/80"
+                      >
+                        <span>Logout</span>
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      onClick={() => setOpenModal(true)}
+                      outline
+                      gradientDuoTone="purpleToBlue"
+                      className="w-24 text-lg font-bold"
+                    >
+                      Login
+                    </Button>
+                  </motion.div>
+                  <SignInForm
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    emailInputRef={emailInputRef}
+                    onSignInSuccess={handleSignInSuccess}
+                  />
+                </>
+              )}
+              <Navbar.Toggle />
+            </div>
+            <Navbar.Collapse>
+              <Navbar.Link
+                href="#home"
+                active
+                className="text-lg font-bold text-neutral-900"
+              >
+                Home
+              </Navbar.Link>
+              <Navbar.Link
+                onClick={() => navigate("/courses")}
+                className="cursor-pointer text-lg font-bold text-neutral-900"
+              >
+                Courses
+              </Navbar.Link>
+              <Navbar.Link
+                href="#about"
+                className="text-lg font-bold text-neutral-900"
+              >
+                About
+              </Navbar.Link>
+              <Navbar.Link
+                href="#contact"
+                className="text-lg font-bold text-neutral-900"
+              >
+                Contact
+              </Navbar.Link>
+            </Navbar.Collapse>
+          </Navbar>
+        </motion.div>
 
         {/* Hero Section */}
         <section
           id="home"
           className="container mx-auto flex flex-col items-center px-10 py-12 lg:flex-row lg:justify-between lg:py-20"
         >
-          <div className="w-full text-center lg:w-1/2 lg:text-left">
+          <motion.div
+            className="w-full text-center lg:w-1/2 lg:text-left"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <h1 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
               Empower your learning journey
             </h1>
@@ -292,66 +338,90 @@ function LandingPage() {
               your goals and succeed at your own pace.
             </p>
             <div className="flex justify-center space-x-4 lg:justify-start">
-              <button
+              <motion.button
                 onClick={() => navigate("/signup")}
                 className="rounded-md bg-primary-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-purple-700"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 SignUp
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Image */}
-          <div className="w-full lg:w-1/2">
+          <motion.div
+            className="w-full lg:w-1/2"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             <div className="relative">
-              <img
+              <motion.img
                 src={picture}
                 alt="Woman with laptop"
-                className="mx-auto w-full max-w-[300px] transition-transform duration-300 hover:scale-105 sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px]"
+                className="mx-auto w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px]"
                 style={{
                   filter: "drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.15))",
                 }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
               />
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* Features Section */}
         <div id="about" className="container mx-auto mt-10 px-4 py-16">
-          <section className="container mx-auto px-6 py-12">
-            <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
-              About Us
-            </h2>
-            <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
-              Welcome to{" "}
-              <span className="font-semibold text-primary-600">BrightPath</span>
-              , your ultimate destination for personalized learning! We are
-              dedicated to providing high-quality, accessible education that
-              empowers learners around the globe. Whether you are looking to
-              pick up a new skill, advance your career, or explore your
-              passions, our platform is designed to help you achieve your goals.
-            </p>
-          </section>
-          <section className="container mx-auto px-6 py-4">
-            <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
-              Our Mission
-            </h2>
-            <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
-              At{" "}
-              <span className="font-semibold text-purple-600">BrightPath</span>,
-              our mission is simple: to make learning accessible, engaging, and
-              impactful. We believe that education has the power to transform
-              lives, and we strive to create a platform where everyone has the
-              opportunity to learn and grow, regardless of their background or
-              location.
-            </p>
-          </section>
-          <h2 className="mb-2 py-6 text-center text-4xl font-bold">
+          <ScrollReveal direction="up">
+            <section className="container mx-auto px-6 py-12">
+              <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
+                About Us
+              </h2>
+              <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
+                Welcome to{" "}
+                <span className="font-semibold text-primary-600">
+                  BrightPath
+                </span>
+                , your ultimate destination for personalized learning! We are
+                dedicated to providing high-quality, accessible education that
+                empowers learners around the globe. Whether you are looking to
+                pick up a new skill, advance your career, or explore your
+                passions, our platform is designed to help you achieve your
+                goals.
+              </p>
+            </section>
+          </ScrollReveal>
+          <ScrollReveal direction="up">
+            <section className="container mx-auto px-6 py-4">
+              <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 lg:text-4xl">
+                Our Mission
+              </h2>
+              <p className="mb-8 text-center text-lg text-gray-700 lg:text-xl">
+                At{" "}
+                <span className="font-semibold text-purple-600">
+                  BrightPath
+                </span>
+                , our mission is simple: to make learning accessible, engaging,
+                and impactful. We believe that education has the power to
+                transform lives, and we strive to create a platform where
+                everyone has the opportunity to learn and grow, regardless of
+                their background or location.
+              </p>
+            </section>
+          </ScrollReveal>
+          <motion.h2
+            className="mb-2 py-6 text-center text-4xl font-bold"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             What We Offer
-          </h2>
+          </motion.h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
-              <FeatureCard key={index} {...feature} />
+              <FeatureCard key={index} {...feature} index={index} />
             ))}
           </div>
         </div>
@@ -421,12 +491,14 @@ function LandingPage() {
                   onChange={handleChange}
                 ></textarea>
               </div>
-              <button
+              <motion.button
                 type="submit"
                 className="rounded-md bg-primary-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Send message
-              </button>
+              </motion.button>
             </form>
           </div>
           {user && (
@@ -489,7 +561,7 @@ function LandingPage() {
           </div>
         </Footer>
       </div>
-    </>
+    </PageTransition>
   );
 }
 
