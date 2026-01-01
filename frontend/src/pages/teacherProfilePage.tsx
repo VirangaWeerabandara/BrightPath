@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { env } from "../config/env.config";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUser, FaLock } from "react-icons/fa";
 
 interface UserProfile {
   firstName: string;
@@ -150,93 +151,153 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout>
-      <div className="mx-auto max-w-2xl p-6">
-        <h1 className="mb-8 text-3xl font-bold">Edit Profile</h1>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 p-8 text-white shadow-xl">
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <h1 className="mb-2 text-4xl font-bold">Edit Profile 👤</h1>
+                <p className="text-lg text-purple-100">
+                  Manage your account information and security settings
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-6">
+        {/* Profile Information Card */}
+        <motion.div
+          className="mb-8 rounded-2xl bg-white p-8 shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <div className="mb-6 flex items-center">
+            <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600">
+              <FaUser className="h-6 w-6 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Profile Information
+            </h2>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={profile.firstName}
+                  onChange={handleChange}
+                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={profile.lastName}
+                  onChange={handleChange}
+                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  required
+                />
+              </div>
+            </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First Name
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Email Address
               </label>
               <input
-                type="text"
-                name="firstName"
-                value={profile.firstName}
+                type="email"
+                name="email"
+                value={profile.email}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={profile.lastName}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                required
-              />
+            {profile.nic !== undefined && (
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  NIC (National ID)
+                </label>
+                <input
+                  type="text"
+                  name="nic"
+                  value={profile.nic}
+                  onChange={handleChange}
+                  className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                />
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl disabled:opacity-50"
+              >
+                {loading ? "Updating..." : "Update Profile"}
+              </motion.button>
             </div>
-          </div>
+          </form>
+        </motion.div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={profile.email}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-              required
-            />
-          </div>
-
-          {profile.nic !== undefined && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                NIC
-              </label>
-              <input
-                type="text"
-                name="nic"
-                value={profile.nic}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-              />
+        {/* Password Change Card */}
+        <motion.div
+          className="rounded-2xl bg-white p-8 shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600">
+                <FaLock className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Security Settings
+              </h2>
             </div>
-          )}
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-md bg-primary-600 px-4 py-2 text-white hover:bg-primary-600 disabled:opacity-50"
+            <motion.button
+              type="button"
+              onClick={() => setShowPasswordChange(!showPasswordChange)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-lg bg-purple-100 px-4 py-2 font-semibold text-purple-700 transition-all hover:bg-purple-200"
             >
-              {loading ? "Updating..." : "Update Profile"}
-            </button>
+              {showPasswordChange ? "Cancel" : "Change Password"}
+            </motion.button>
           </div>
-        </form>
-        {/* Add this after the existing form */}
-        <div className="mt-8">
-          <button
-            type="button"
-            onClick={() => setShowPasswordChange(!showPasswordChange)}
-            className="text-primary-600 hover:text-primary-600"
-          >
-            {showPasswordChange ? "Cancel Password Change" : "Change Password"}
-          </button>
 
           {showPasswordChange && (
-            <form onSubmit={handlePasswordChange} className="mt-4 space-y-6">
+            <motion.form
+              onSubmit={handlePasswordChange}
+              className="space-y-6 border-t border-gray-200 pt-6"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Current Password
                 </label>
                 <div className="relative">
@@ -249,7 +310,7 @@ export default function ProfilePage() {
                         currentPassword: e.target.value,
                       }))
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10"
+                    className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 pr-10 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                     required
                   />
                   <button
@@ -260,7 +321,7 @@ export default function ProfilePage() {
                         current: !prev.current,
                       }))
                     }
-                    className="absolute inset-y-0 right-0 mt-1 flex cursor-pointer items-center pr-3 text-gray-600"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-purple-600"
                   >
                     {showPasswords.current ? (
                       <FaEyeSlash size={20} />
@@ -272,7 +333,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
                   New Password
                 </label>
                 <div className="relative">
@@ -285,7 +346,7 @@ export default function ProfilePage() {
                         newPassword: e.target.value,
                       }))
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10"
+                    className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 pr-10 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                     required
                   />
                   <button
@@ -293,7 +354,7 @@ export default function ProfilePage() {
                     onClick={() =>
                       setShowPasswords((prev) => ({ ...prev, new: !prev.new }))
                     }
-                    className="absolute inset-y-0 right-0 mt-1 flex cursor-pointer items-center pr-3 text-gray-600"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-purple-600"
                   >
                     {showPasswords.new ? (
                       <FaEyeSlash size={20} />
@@ -305,7 +366,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Confirm New Password
                 </label>
                 <div className="relative">
@@ -318,7 +379,7 @@ export default function ProfilePage() {
                         confirmPassword: e.target.value,
                       }))
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10"
+                    className="block w-full rounded-xl border-2 border-gray-200 px-4 py-3 pr-10 transition-all focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                     required
                   />
                   <button
@@ -329,7 +390,7 @@ export default function ProfilePage() {
                         confirm: !prev.confirm,
                       }))
                     }
-                    className="absolute inset-y-0 right-0 mt-1 flex cursor-pointer items-center pr-3 text-gray-600"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-purple-600"
                   >
                     {showPasswords.confirm ? (
                       <FaEyeSlash size={20} />
@@ -341,17 +402,19 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex justify-end">
-                <button
+                <motion.button
                   type="submit"
                   disabled={loading}
-                  className="rounded-md bg-primary-600 px-4 py-2 text-white hover:bg-primary-600 disabled:opacity-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl disabled:opacity-50"
                 >
-                  {loading ? "Updating Password..." : "Update Password"}
-                </button>
+                  {loading ? "Updating..." : "Update Password"}
+                </motion.button>
               </div>
-            </form>
+            </motion.form>
           )}
-        </div>
+        </motion.div>
       </div>
     </DashboardLayout>
   );
