@@ -77,8 +77,11 @@ export default function DashboardPage() {
   });
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [teacherName, setTeacherName] = useState<string>("");
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    setTeacherName(user.name || "Teacher");
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -151,7 +154,7 @@ export default function DashboardPage() {
             </div>
             <div className="relative z-10">
               <h1 className="mb-2 text-4xl font-bold">
-                Welcome back, Teacher! 🎓
+                Welcome back, {teacherName}! 🎓
               </h1>
               <p className="text-lg text-purple-100">
                 Here's what's happening with your courses today
