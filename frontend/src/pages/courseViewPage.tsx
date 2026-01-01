@@ -4,11 +4,6 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { env } from "../config/env.config";
 import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
-import {
-  PageTransition,
-  containerVariants,
-  itemVariants,
-} from "../components/pageTransition";
 
 interface Course {
   _id: string;
@@ -98,160 +93,168 @@ export default function CourseViewPage() {
   }
 
   return (
-    <PageTransition>
-      <DashboardLayout>
-        <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <motion.div
-            className="mb-8"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 p-8 text-white shadow-xl">
-              <div className="relative z-10 flex items-center justify-between">
-                <div>
-                  <h1 className="mb-2 text-4xl font-bold">{course.name}</h1>
-                  <p className="text-lg text-purple-100">
-                    {course.category || "Course"}
-                  </p>
-                </div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 p-8 text-white shadow-xl">
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <h1 className="mb-2 text-4xl font-bold">{course.name}</h1>
+                <p className="text-lg text-purple-100">
+                  {course.category || "Course"}
+                </p>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <button
+                  onClick={() => navigate(-1)}
+                  className="rounded-xl bg-white px-6 py-3 font-semibold text-purple-600 shadow-lg transition-all hover:bg-purple-50"
                 >
-                  <button
-                    onClick={() => navigate(-1)}
-                    className="rounded-xl bg-white px-6 py-3 font-semibold text-purple-600 shadow-lg transition-all hover:bg-purple-50"
-                  >
-                    ← Back
-                  </button>
-                </motion.div>
+                  ← Back
+                </button>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Course Info */}
+        <motion.div
+          className="mb-6 rounded-2xl bg-white p-8 shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <h2 className="mb-4 text-2xl font-bold text-gray-800">
+            About this Course
+          </h2>
+          <p className="mb-6 leading-relaxed text-gray-700">
+            {course.description}
+          </p>
+
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-800">
+              Instructor
+            </h3>
+            <div className="flex items-center space-x-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-white">
+                <span className="font-semibold">
+                  {course.teacherId.firstName[0]}
+                </span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {course.teacherId.firstName} {course.teacherId.lastName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {course.teacherId.email}
+                </p>
               </div>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Course Info */}
-          <motion.div
-            className="mb-6 rounded-2xl bg-white p-8 shadow-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <h2 className="mb-4 text-2xl font-bold text-gray-800">
-              About this Course
-            </h2>
-            <p className="mb-6 leading-relaxed text-gray-700">
-              {course.description}
+        {/* Course Content */}
+        <motion.div
+          className="rounded-2xl bg-white p-8 shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h2 className="mb-6 text-2xl font-bold text-gray-800">
+            Course Content
+          </h2>
+
+          {/* Video Player */}
+          <div className="mb-8 aspect-video overflow-hidden rounded-2xl bg-black shadow-lg">
+            <video
+              key={course.videos[currentVideoIndex]}
+              className="size-full"
+              controls
+              autoPlay
+              src={course.videos[currentVideoIndex]}
+            />
+          </div>
+
+          {/* Current Video Info */}
+          <div className="mb-8 border-b border-gray-200 pb-6">
+            <h3 className="mb-2 text-2xl font-bold text-gray-900">
+              {course.titles[currentVideoIndex]}
+            </h3>
+            <p className="text-gray-600">
+              Instructor: {course.teacherId.firstName}{" "}
+              {course.teacherId.lastName}
             </p>
+          </div>
 
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                Instructor
-              </h3>
-              <div className="flex items-center space-x-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-white">
-                  <span className="font-semibold">
-                    {course.teacherId.firstName[0]}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    {course.teacherId.firstName} {course.teacherId.lastName}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {course.teacherId.email}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Course Content */}
-          <motion.div
-            className="rounded-2xl bg-white p-8 shadow-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <h2 className="mb-6 text-2xl font-bold text-gray-800">
-              Course Content
-            </h2>
-
-            {/* Video Player */}
-            <div className="mb-8 aspect-video overflow-hidden rounded-2xl bg-black shadow-lg">
-              <video
-                key={course.videos[currentVideoIndex]}
-                className="size-full"
-                controls
-                autoPlay
-                src={course.videos[currentVideoIndex]}
-              />
-            </div>
-
-            {/* Current Video Info */}
-            <div className="mb-8 border-b border-gray-200 pb-6">
-              <h3 className="mb-2 text-2xl font-bold text-gray-900">
-                {course.titles[currentVideoIndex]}
-              </h3>
-              <p className="text-gray-600">
-                Instructor: {course.teacherId.firstName}{" "}
-                {course.teacherId.lastName}
-              </p>
-            </div>
-
-            {/* Video List */}
-            <div>
-              <h3 className="mb-4 text-lg font-semibold text-gray-800">
+          {/* Video List */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-gray-800">
                 Videos in this Course
               </h3>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {course.videos.map((video, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => setCurrentVideoIndex(index)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`overflow-hidden rounded-xl transition-all ${
+              <span className="text-sm font-semibold text-purple-600">
+                {course.videos.length} videos
+              </span>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {course.videos.map((video, index) => (
+                <motion.button
+                  key={index}
+                  onClick={() => setCurrentVideoIndex(index)}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`group overflow-hidden rounded-2xl transition-all duration-200 ${
+                    currentVideoIndex === index
+                      ? "shadow-xl ring-2 ring-purple-600 ring-offset-2"
+                      : "shadow-md hover:shadow-xl"
+                  }`}
+                >
+                  <div className="relative aspect-video overflow-hidden bg-black">
+                    <img
+                      src={course.thumbnails[index]}
+                      alt={course.titles[index]}
+                      className="size-full object-cover transition-transform group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90">
+                        <span className="text-2xl text-purple-600">▶</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={`p-4 transition-all ${
                       currentVideoIndex === index
-                        ? "shadow-lg ring-2 ring-purple-600"
-                        : "shadow-md hover:shadow-lg"
+                        ? "bg-gradient-to-br from-purple-50 to-indigo-50"
+                        : "bg-white group-hover:bg-purple-50/50"
                     }`}
                   >
-                    <div className="aspect-video overflow-hidden bg-black">
-                      <img
-                        src={course.thumbnails[index]}
-                        alt={course.titles[index]}
-                        className="size-full object-cover"
-                      />
-                    </div>
-                    <div
-                      className={`p-4 ${
+                    <p
+                      className={`truncate text-sm font-bold ${
                         currentVideoIndex === index
-                          ? "bg-purple-50"
-                          : "bg-white"
+                          ? "text-purple-700"
+                          : "text-gray-900"
                       }`}
                     >
-                      <p
-                        className={`text-sm font-semibold ${
-                          currentVideoIndex === index
-                            ? "text-purple-700"
-                            : "text-gray-900"
-                        }`}
-                      >
-                        {course.titles[index]}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Video {index + 1} of {course.videos.length}
-                      </p>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
+                      {course.titles[index]}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      {index + 1} of {course.videos.length}
+                    </p>
+                  </div>
+                </motion.button>
+              ))}
             </div>
-          </motion.div>
-        </div>
-      </DashboardLayout>
-    </PageTransition>
+          </div>
+        </motion.div>
+      </div>
+    </DashboardLayout>
   );
 }
