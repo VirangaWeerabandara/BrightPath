@@ -208,7 +208,7 @@ export default function CourseViewPage() {
           </h2>
 
           {/* Video Player */}
-          <div className="mb-8 aspect-video overflow-hidden rounded-2xl bg-black shadow-lg">
+          <div className="mb-8 aspect-video max-w-4xl overflow-hidden rounded-2xl bg-black shadow-lg sm:mx-auto">
             <video
               key={course.videos[currentVideoIndex]}
               className="size-full"
@@ -239,14 +239,14 @@ export default function CourseViewPage() {
                 {course.videos.length} videos
               </span>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {course.videos.map((video, index) => (
                 <motion.button
                   key={index}
                   onClick={() => setCurrentVideoIndex(index)}
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`group overflow-hidden rounded-2xl transition-all duration-200 ${
+                  className={`group overflow-hidden rounded-xl transition-all duration-200 ${
                     currentVideoIndex === index
                       ? "shadow-xl ring-2 ring-purple-600 ring-offset-2"
                       : "shadow-md hover:shadow-xl"
@@ -259,20 +259,20 @@ export default function CourseViewPage() {
                       className="size-full object-cover transition-transform group-hover:scale-110"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90">
-                        <span className="text-2xl text-purple-600">▶</span>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90">
+                        <span className="text-xl text-purple-600"></span>
                       </div>
                     </div>
                   </div>
                   <div
-                    className={`p-4 transition-all ${
+                    className={`p-3 transition-all ${
                       currentVideoIndex === index
                         ? "bg-gradient-to-br from-purple-50 to-indigo-50"
                         : "bg-white group-hover:bg-purple-50/50"
                     }`}
                   >
                     <p
-                      className={`truncate text-sm font-bold ${
+                      className={`truncate text-xs font-semibold ${
                         currentVideoIndex === index
                           ? "text-purple-700"
                           : "text-gray-900"
@@ -280,7 +280,7 @@ export default function CourseViewPage() {
                     >
                       {course.titles[index]}
                     </p>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-[11px] text-gray-500">
                       {index + 1} of {course.videos.length}
                     </p>
                   </div>
