@@ -51,6 +51,14 @@ const createCourse = async (req, res) => {
       });
     }
 
+    // Validate teacherId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid teacher ID format",
+      });
+    }
+
     // Validate arrays have matching lengths
     if (
       videos.length !== thumbnails.length ||
@@ -228,6 +236,14 @@ const deleteCourse = async (req, res) => {
       $pull: { courses: id },
     });
 
+    // Remove course from all enrolled students' courses array
+    if (course.enrolledStudents && course.enrolledStudents.length > 0) {
+      await Student.updateMany(
+        { _id: { $in: course.enrolledStudents } },
+        { $pull: { courses: id } }
+      );
+    }
+
     await Course.findByIdAndDelete(id);
 
     return res.status(200).json({
@@ -314,21 +330,34 @@ const enrollStudent = async (req, res) => {
       });
     }
 
-    // Check if student is already enrolled
-    if (course.enrolledStudents.includes(studentId)) {
+    // Initialize enrolledStudents array if it doesn't exist
+    if (!course.enrolledStudents) {
+      course.enrolledStudents = [];
+    }
+
+    // Check if student is already enrolled (proper ObjectId comparison)
+    const isAlreadyEnrolled = course.enrolledStudents.some(
+      (enrolledId) => enrolledId.toString() === studentId
+    );
+
+    if (isAlreadyEnrolled) {
       return res.status(400).json({
         success: false,
         message: "Student already enrolled in this course",
       });
     }
 
-    course.enrolledStudents.push(studentId);
+    course.enrolledStudents.push(new mongoose.Types.ObjectId(studentId));
     await course.save();
 
-    // Add course to student's enrolled courses (if you have this field in your student model)
-    await Student.findByIdAndUpdate(studentId, {
-      $push: { enrolledCourses: courseId },
-    });
+    // Initialize student courses array if it doesn't exist
+    if (!student.courses) {
+      student.courses = [];
+    }
+
+    // Add course to student's enrolled courses
+    student.courses.push(new mongoose.Types.ObjectId(courseId));
+    await student.save();
 
     return res.status(200).json({
       success: true,
@@ -336,6 +365,7 @@ const enrollStudent = async (req, res) => {
       data: course,
     });
   } catch (error) {
+    console.error("Enrollment error:", error);
     return handleError(error, res);
   }
 };

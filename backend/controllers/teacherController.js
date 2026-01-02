@@ -2,6 +2,7 @@ const Teacher = require("../models/teacherModel");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 const createToken = (_id) => {
   if (!process.env.SECRET) {
@@ -47,6 +48,11 @@ const updateTeacherProfile = async (req, res) => {
     const { id } = req.params;
     const { firstName, lastName, email, nic } = req.body;
 
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid teacher ID format" });
+    }
+
     // Validate inputs
     if (!firstName || !lastName || !email) {
       return res.status(400).json({ error: "Required fields missing" });
@@ -78,6 +84,11 @@ const updateTeacherPassword = async (req, res) => {
   try {
     const { id } = req.params;
     const { currentPassword, newPassword } = req.body;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid teacher ID format" });
+    }
 
     const teacher = await Teacher.findById(id);
     if (!teacher) {

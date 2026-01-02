@@ -31,10 +31,12 @@ const teacherSchema = new Schema({
     type: String,
     required: true,
   },
-  courses: {
-    type: Array,
-    required: false,
-  },
+  courses: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
 });
 
 teacherSchema.statics.signup = async function (

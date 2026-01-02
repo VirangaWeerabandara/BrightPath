@@ -1,8 +1,9 @@
 const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const Course = require("../models/courseModel"); // Add this import
+const Course = require("../models/courseModel");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 // Create JWT token
 const createToken = (_id) => {
   if (!process.env.SECRET) {
@@ -42,15 +43,25 @@ const enrollInCourse = async (req, res) => {
     const { courseId } = req.params;
     const studentId = req.user._id;
 
+    // Validate courseId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ error: "Invalid course ID" });
+    }
+
+    // Validate studentId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({ error: "Invalid student ID" });
+    }
+
     // Find the student and course
     const student = await Student.findById(studentId);
     const course = await Course.findById(courseId);
 
     if (!student) {
-      throw new Error("Student not found");
+      return res.status(404).json({ error: "Student not found" });
     }
     if (!course) {
-      throw new Error("Course not found");
+      return res.status(404).json({ error: "Course not found" });
     }
 
     // Initialize courses array if it doesn't exist
@@ -58,13 +69,17 @@ const enrollInCourse = async (req, res) => {
       student.courses = [];
     }
 
-    // Check if already enrolled
-    if (student.courses.includes(courseId)) {
-      throw new Error("Already enrolled in this course");
+    // Check if already enrolled (compare as strings to handle ObjectId comparison)
+    const isAlreadyEnrolled = student.courses.some(
+      (enrolledCourseId) => enrolledCourseId.toString() === courseId
+    );
+
+    if (isAlreadyEnrolled) {
+      return res.status(400).json({ error: "Already enrolled in this course" });
     }
 
     // Add course to student's courses
-    student.courses.push(courseId);
+    student.courses.push(new mongoose.Types.ObjectId(courseId));
     await student.save();
 
     // Initialize enrolledStudents array if it doesn't exist
@@ -73,7 +88,7 @@ const enrollInCourse = async (req, res) => {
     }
 
     // Add student to course's enrolledStudents
-    course.enrolledStudents.push(studentId);
+    course.enrolledStudents.push(new mongoose.Types.ObjectId(studentId));
     await course.save();
 
     res.status(200).json({
@@ -82,6 +97,7 @@ const enrollInCourse = async (req, res) => {
       courseId: courseId,
     });
   } catch (error) {
+    console.error("Enrollment error:", error);
     res.status(400).json({ error: error.message });
   }
 };

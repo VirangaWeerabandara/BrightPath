@@ -3,6 +3,7 @@ import { Modal, Button } from "flowbite-react";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { env } from "../config/env.config";
+import defaultThumbnail from "../assets/default-course-thumbnail.png";
 
 interface CourseDetailsModalProps {
   show: boolean;
@@ -12,7 +13,7 @@ interface CourseDetailsModalProps {
     name: string;
     description: string;
     category: string;
-    thumbnails: Array<{ url: string }>;
+    thumbnails: string[];
     teacherId: {
       firstName: string;
       lastName: string;
@@ -71,73 +72,123 @@ const CourseDetailsCard: React.FC<CourseDetailsModalProps> = ({
   };
 
   return (
-    <Modal show={show} onClose={onClose} size="xl" dismissible>
-      <Modal.Header className="border-b border-gray-200">
-        <div className="space-y-1">
-          <h3 className="text-2xl font-semibold text-gray-900">
-            {course.name}
-          </h3>
-          <p className="text-sm text-gray-600">
-            Instructor: {course.teacherId.firstName} {course.teacherId.lastName}
-          </p>
+    <Modal
+      show={show}
+      onClose={onClose}
+      size="2xl"
+      dismissible
+      className="backdrop-blur-sm"
+    >
+      <Modal.Header className="border-b border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div className="space-y-2">
+          <h3 className="text-3xl font-bold text-gray-900">{course.name}</h3>
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-sm font-semibold text-white">
+              {course.teacherId.firstName[0]}
+            </div>
+            <p className="text-sm font-medium text-gray-700">
+              {course.teacherId.firstName} {course.teacherId.lastName}
+            </p>
+          </div>
         </div>
       </Modal.Header>
 
-      <Modal.Body className="space-y-6">
+      <Modal.Body className="space-y-6 bg-white p-6">
         {/* Course Thumbnail */}
-        <div className="aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
+        <div className="aspect-video w-full overflow-hidden rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 shadow-lg">
           <img
-            src={course.thumbnails?.[0]?.url || "/default-thumbnail.png"}
+            src={course.thumbnails?.[0] || defaultThumbnail}
             alt={course.name}
-            className="h-full w-full object-cover transition-transform duration-200 hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = defaultThumbnail;
+            }}
           />
         </div>
 
         {/* Course Details */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Category Badge */}
-          <div>
-            <span className="bg-primary-50 text-primary-700 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-1.5 text-sm font-semibold text-white shadow-md">
               {course.category}
             </span>
           </div>
 
           {/* Description */}
-          <div className="prose max-w-none">
-            <h4 className="text-lg font-semibold text-gray-900">
+          <div className="space-y-3 rounded-lg bg-gray-50 p-5">
+            <h4 className="text-xl font-bold text-gray-900">
               About this course
             </h4>
-            <p className="text-base text-gray-700">{course.description}</p>
+            <p className="text-base leading-relaxed text-gray-700">
+              {course.description}
+            </p>
           </div>
 
           {/* What you'll learn section */}
-          <div className="rounded-lg bg-gray-50 p-4">
-            <h4 className="mb-3 text-lg font-semibold text-gray-900">
+          <div className="rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 p-6 shadow-sm">
+            <h4 className="mb-4 text-xl font-bold text-gray-900">
               What you'll learn
             </h4>
-            <ul className="list-inside list-disc space-y-2 text-gray-700">
-              <li>Full course curriculum</li>
-              <li>Lifetime access</li>
-              <li>Learn at your own pace</li>
-              <li>Access on mobile and desktop</li>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 text-xs text-white">
+                  ✓
+                </span>
+                <span className="text-gray-700">
+                  Full course curriculum with structured lessons
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 text-xs text-white">
+                  ✓
+                </span>
+                <span className="text-gray-700">
+                  Lifetime access to all course materials
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 text-xs text-white">
+                  ✓
+                </span>
+                <span className="text-gray-700">
+                  Learn at your own pace, anytime
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 text-xs text-white">
+                  ✓
+                </span>
+                <span className="text-gray-700">
+                  Access on mobile and desktop devices
+                </span>
+              </li>
             </ul>
           </div>
         </div>
       </Modal.Body>
 
-      <Modal.Footer className="border-t border-gray-200">
+      <Modal.Footer className="border-t border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50">
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm font-medium text-gray-700">
             {isLoggedIn
-              ? "Click enroll to start learning"
-              : "Login required to enroll in this course"}
+              ? "🎓 Ready to start your learning journey?"
+              : "🔐 Login required to enroll in this course"}
           </div>
           <div className="flex gap-3">
-            <Button color="gray" onClick={onClose}>
+            <Button
+              color="gray"
+              onClick={onClose}
+              className="hover:bg-gray-100"
+            >
               Close
             </Button>
-            <Button gradientDuoTone="purpleToBlue" onClick={handleEnroll}>
-              {isLoggedIn ? "Enroll Now" : "Login to Enroll"}
+            <Button
+              gradientDuoTone="purpleToBlue"
+              onClick={handleEnroll}
+              className="font-semibold shadow-md transition-all hover:shadow-lg"
+            >
+              {isLoggedIn ? "🚀 Enroll Now" : "Login to Enroll"}
             </Button>
           </div>
         </div>
