@@ -3,7 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { env } from "../config/env.config";
-import { DashboardLayout } from "../components/layout/TeacherDashboardLayout";
+import background from "../assets/background2.png";
+import logo from "../assets/logo.png";
+import { FaArrowLeft } from "react-icons/fa";
 
 interface Course {
   _id: string;
@@ -55,18 +57,24 @@ export default function CourseViewPage() {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="flex h-screen items-center justify-center">
+      <div
+        className="flex min-h-screen items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: `url(${background})` }}
+      >
+        <div className="rounded-2xl bg-white/90 p-8 shadow-xl backdrop-blur-sm">
           <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600"></div>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <DashboardLayout>
-        <div className="container mx-auto px-4 py-8">
+      <div
+        className="flex min-h-screen items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: `url(${background})` }}
+      >
+        <div className="rounded-2xl bg-white/90 p-8 shadow-xl backdrop-blur-sm">
           <div className="rounded-2xl bg-red-50 p-8 text-red-800">
             <h2 className="text-2xl font-bold">Error</h2>
             <p className="mt-2">{error}</p>
@@ -78,24 +86,64 @@ export default function CourseViewPage() {
             </button>
           </div>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   if (!course) {
     return (
-      <DashboardLayout>
-        <div className="container mx-auto px-4 py-8">
+      <div
+        className="flex min-h-screen items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: `url(${background})` }}
+      >
+        <div className="rounded-2xl bg-white/90 p-8 shadow-xl backdrop-blur-sm">
           <div className="text-center text-gray-500">No course found</div>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
+    <section
+      className="min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url(${background})` }}
+    >
+      {/* Header */}
+      <motion.div
+        className="sticky top-0 z-50 border-b border-transparent bg-transparent backdrop-blur-lg"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="max-w-8xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between space-x-4">
+            {/* Logo and Name */}
+            <div
+              className="flex cursor-pointer items-center space-x-2"
+              onClick={() => navigate("/")}
+            >
+              <img src={logo} alt="BrightPath Logo" className="h-8 w-8" />
+              <span className="text-xl font-bold text-gray-900">
+                BrightPath
+              </span>
+            </div>
+
+            {/* Back Button */}
+            <motion.button
+              onClick={() => navigate("/my-learning")}
+              className="flex items-center gap-2 rounded-lg bg-white/70 px-4 py-2 font-semibold text-gray-700 backdrop-blur-sm transition-all hover:bg-white/90"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaArrowLeft />
+              My Learning
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Course Header */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: -20 }}
@@ -103,31 +151,18 @@ export default function CourseViewPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 p-8 text-white shadow-xl">
-            <div className="relative z-10 flex items-center justify-between">
-              <div>
-                <h1 className="mb-2 text-4xl font-bold">{course.name}</h1>
-                <p className="text-lg text-purple-100">
-                  {course.category || "Course"}
-                </p>
-              </div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <button
-                  onClick={() => navigate(-1)}
-                  className="rounded-xl bg-white px-6 py-3 font-semibold text-purple-600 shadow-lg transition-all hover:bg-purple-50"
-                >
-                  ← Back
-                </button>
-              </motion.div>
+            <div className="relative z-10">
+              <h1 className="mb-2 text-4xl font-bold">{course.name}</h1>
+              <p className="text-lg text-purple-100">
+                {course.category || "Course"}
+              </p>
             </div>
           </div>
         </motion.div>
 
         {/* Course Info */}
         <motion.div
-          className="mb-6 rounded-2xl bg-white p-8 shadow-lg"
+          className="mb-6 rounded-2xl bg-white/90 p-8 shadow-lg backdrop-blur-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -163,7 +198,7 @@ export default function CourseViewPage() {
 
         {/* Course Content */}
         <motion.div
-          className="rounded-2xl bg-white p-8 shadow-lg"
+          className="rounded-2xl bg-white/90 p-8 shadow-lg backdrop-blur-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -255,6 +290,6 @@ export default function CourseViewPage() {
           </div>
         </motion.div>
       </div>
-    </DashboardLayout>
+    </section>
   );
 }
