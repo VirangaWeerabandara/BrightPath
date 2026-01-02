@@ -26,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.98 }}
     >
-      <div className="aspect-square overflow-hidden rounded-lg shadow-md transition-shadow duration-300 group-hover:shadow-xl">
+      <div className="aspect-video overflow-hidden rounded-lg bg-gradient-to-br from-purple-50 to-indigo-50 shadow-md transition-shadow duration-300 group-hover:shadow-xl">
         <motion.img
           className="size-full object-cover"
           src={imageUrl || defaultThumbnail}
@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           onError={(e) => {
             e.currentTarget.src = defaultThumbnail;
           }}
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.4 }}
         />
       </div>
