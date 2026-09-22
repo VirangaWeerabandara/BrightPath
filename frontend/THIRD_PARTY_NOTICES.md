@@ -1,3 +1,12 @@
+# Third-Party Notices
+
+This app was bootstrapped from the [Flowbite React CRA template](https://github.com/themesberg/flowbite-react-template-cra),
+used under its original license below. This notice applies only to the
+original template scaffold, not to BrightPath's own code — see the root
+[LICENSE](../LICENSE) for that.
+
+## Flowbite React CRA Template
+
 MIT License
 
 Copyright (c) 2024 Themesberg
