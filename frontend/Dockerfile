@@ -10,6 +10,11 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# CRA bakes REACT_APP_* vars into the static bundle at build time,
+# so the backend URL must be supplied as a build arg per environment.
+ARG REACT_APP_API_URL=http://localhost:4000/api
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 # Build the app
 RUN npm run build
 

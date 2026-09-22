@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: brightpath-backend
+    container_name: brightpath-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - brightpath
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: brightpath-frontend
+    container_name: brightpath-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - brightpath
+
+networks:
+  brightpath:
+    driver: bridge

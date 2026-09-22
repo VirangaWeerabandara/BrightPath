@@ -1,0 +1,13 @@
+services:
+  backend:
+    env_file:
+      - ./.env.local
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:4000/api}
+    ports:
+      - "3000:80"
